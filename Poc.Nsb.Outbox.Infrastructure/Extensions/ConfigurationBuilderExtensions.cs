@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
+
 using System.Reflection;
 
-namespace Poc.Nsb.Outbox.Infrastructure;
+namespace Poc.Nsb.Outbox.Infrastructure.Extensions;
 
 public static class ConfigurationBuilderExtensions
 {
-    public static void ConfigureDefaultConfig(this IConfigurationBuilder configBuilder, string environment, string contentRootPath, Action<IConfigurationBuilder> configAction = null)
+    public static void ConfigureDefaultConfig(this IConfigurationBuilder configBuilder, string environment, string contentRootPath, Action<IConfigurationBuilder>? configAction = null)
     {
         configBuilder.Sources.Clear();
 

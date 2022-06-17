@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Poc.Nsb.Outbox.Infrastructure;
+using Poc.Nsb.Outbox.Infrastructure.Model;
+
+namespace Poc.Nsb.Outbox.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {

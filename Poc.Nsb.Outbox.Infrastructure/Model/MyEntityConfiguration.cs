@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Poc.Nsb.Outbox.Core;
 
-namespace Poc.Nsb.Outbox.Infrastructure;
+namespace Poc.Nsb.Outbox.Infrastructure.Model;
 
 public class MyEntityConfiguration : IEntityTypeConfiguration<MyEntity>
 {

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
 using Poc.Nsb.Outbox.Core;
 
-namespace Poc.Nsb.Outbox.Infrastructure;
+namespace Poc.Nsb.Outbox.Infrastructure.Model;
 
 public class PocDbContext : DbContext
 {
-    public DbSet<MyEntity> MyEntities { get; set; }
+    public DbSet<MyEntity> MyEntities => Set<MyEntity>();
 
     public PocDbContext(DbContextOptions<PocDbContext> options)
         : base(options)

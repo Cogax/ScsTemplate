@@ -1,4 +1,4 @@
-using Poc.Nsb.Outbox.Infrastructure;
+using Poc.Nsb.Outbox.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
