@@ -2,6 +2,7 @@ using Poc.Nsb.Outbox.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
+builder.Host.AddMessaging("Poc.Nsb.Outbox.Web", sendOnly: true);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

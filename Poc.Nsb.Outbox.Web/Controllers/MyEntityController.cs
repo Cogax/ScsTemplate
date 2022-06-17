@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Poc.Nsb.Outbox.Core;
 using Poc.Nsb.Outbox.Infrastructure.Model;
 
-namespace Poc.Nsb.Outbox.Controllers;
+namespace Poc.Nsb.Outbox.Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
