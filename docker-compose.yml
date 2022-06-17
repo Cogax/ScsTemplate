@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: Top-Secret
+      MSSQL_PID: Developer
+    user: root
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -U sa -P Top-Secret || exit 1
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 15s
+
+  rabbitmq:
+    image: devpakcontainerregistry.azurecr.io/pak-rabbitmq:master-latest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: nc -z localhost 5672 || exit -1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s

@@ -1,0 +1,50 @@
+#Ignore thumbnails created by Windows
+Thumbs.db
+#Ignore files built by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.lib
+*.sbr
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+.vs/
+#Nuget packages folder
+packages/
+*.DotSettings
+nupkg/
+#Test results & coverage reports
+tests-result/
+tests/**/*.xml
+*testresults.xml
+*cobertura.xml
+coverage/
+/Planzer.Pak.Vrp.Manager/node_modules/.yarn-integrity
+/Planzer.Pak.Vrp.Manager/package-lock.json
+/Planzer.Pak.Vrp.Manager/yarn.lock
+node_modules
+out-tsc
+dist
+*.local.yaml
+*.local.yml
+LocalDb.db*
+.idea/
+.run/
