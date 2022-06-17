@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Poc.Nsb.Outbox.Infrastructure\Poc.Nsb.Outbox.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\" />
+  </ItemGroup>
+
 </Project>
