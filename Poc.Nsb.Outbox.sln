@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Web", "Poc.Nsb.Outbox.Web\Poc.Nsb.Outbox.Web.csproj", "{38D48652-EF03-4CE9-A37D-5482564F7733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.Nsb.Outbox.Worker", "Poc.Nsb.Outbox.Worker\Poc.Nsb.Outbox.Worker.csproj", "{912E9531-BE1A-4449-A5BF-0648C82F8541}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Worker", "Poc.Nsb.Outbox.Worker\Poc.Nsb.Outbox.Worker.csproj", "{912E9531-BE1A-4449-A5BF-0648C82F8541}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BB34D099-E9D3-4BAF-8494-4A5C8B3028AD}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,9 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployables", "Deployables"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{555FAA07-0FD1-43ED-8BA9-B269CB0BB524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.Nsb.Outbox.Core", "Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj", "{12D71677-3007-43A2-8F79-C3FF5B5616CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Core", "Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj", "{12D71677-3007-43A2-8F79-C3FF5B5616CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.Nsb.Outbox.Infrastructure", "Poc.Nsb.Outbox.Infrastructure\Poc.Nsb.Outbox.Infrastructure.csproj", "{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Infrastructure", "Poc.Nsb.Outbox.Infrastructure\Poc.Nsb.Outbox.Infrastructure.csproj", "{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
