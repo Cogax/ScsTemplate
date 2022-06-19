@@ -13,6 +13,9 @@ public static class HostBuilderExtensions
         hostBuilder.UseNServiceBus(hostBuilderContext =>
         {
             EndpointConfiguration endpointConfiguration = new(endpointName);
+            endpointConfiguration.EnableInstallers(); // Damit Queues etc. beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
+            endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
+            endpointConfiguration.EnableOutbox(); // Outbox aktivieren
 
             // Persistence
             // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie
@@ -28,9 +31,6 @@ public static class HostBuilderExtensions
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
             
-            endpointConfiguration.EnableInstallers(); // Damit Queues beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
-            endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
-
             // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
             // aber keine Abonnieren, Handeln oder Subscriben.
             if (sendOnly)
