@@ -15,18 +15,24 @@ public static class HostBuilderExtensions
             EndpointConfiguration endpointConfiguration = new(endpointName);
 
             // Persistence
+            // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie
+            // Outbox, Saga Daten, etc.
             var sqlPersistence = endpointConfiguration.UsePersistence<SqlPersistence>();
             sqlPersistence.ConnectionBuilder(() => new SqlConnection(hostBuilderContext.Configuration["ConnectionStrings:Db"]));
             sqlPersistence.SqlDialect<SqlDialect.MsSqlServer>();
 
             // Transport
+            // Der NSB Transport definiert wo die Messages gesendet werden. Es gibt Transporte für
+            // RabbitMq, Azure ServiceBus, MSSQL, etc.
             var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
+            
+            endpointConfiguration.EnableInstallers(); // Damit Queues beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
+            endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
 
-            endpointConfiguration.PurgeOnStartup(true);
-            endpointConfiguration.EnableInstallers();
-
+            // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
+            // aber keine Abonnieren, Handeln oder Subscriben.
             if (sendOnly)
             {
                 endpointConfiguration.DisableFeature<AutoSubscribe>();
