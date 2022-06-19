@@ -4,4 +4,8 @@
 * `docker-compose up`
 
 ## Migrations
-* New: `Add-Migration InitialCreate -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web`
+* New: `Add-Migration <migration-name> -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web`
+
+
+## Design Entscheidungen
+* ID's werden Clientseitig erstellt damit diese in den Events referenziert werden können.

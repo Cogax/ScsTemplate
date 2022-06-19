@@ -37,4 +37,9 @@
     <ProjectReference Include="..\Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
