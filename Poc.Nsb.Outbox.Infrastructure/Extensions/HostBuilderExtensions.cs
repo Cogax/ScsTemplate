@@ -14,13 +14,18 @@ public static class HostBuilderExtensions
         {
             EndpointConfiguration endpointConfiguration = new(endpointName);
 
+            // Persistence
             var sqlPersistence = endpointConfiguration.UsePersistence<SqlPersistence>();
-            var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
-
             sqlPersistence.ConnectionBuilder(() => new SqlConnection(hostBuilderContext.Configuration["ConnectionStrings:Db"]));
             sqlPersistence.SqlDialect<SqlDialect.MsSqlServer>();
+
+            // Transport
+            var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
+            rabbitMqTransport.UseConventionalRoutingTopology();
+
             endpointConfiguration.PurgeOnStartup(true);
+            endpointConfiguration.EnableInstallers();
 
             if (sendOnly)
             {

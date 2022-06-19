@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+
 using Poc.Nsb.Outbox.Infrastructure.Extensions;
+using Poc.Nsb.Outbox.Infrastructure.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
@@ -14,4 +17,5 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.Services.Migrate<PocDbContext>();
 app.Run();
