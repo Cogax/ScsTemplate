@@ -12,7 +12,7 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
     {
         builder.ToTable("TodoItems").HasKey("id");
         builder.Property<TodoItemId>("id").HasColumnName("Id");
-        builder.Property<Label>("label").HasColumnName("Label");
+        builder.Property<Label>("label").HasColumnName("Label").HasMaxLength(Label.MaxLength);
         builder.Property<bool>("completed").HasColumnName("Completed");
     }
 }
