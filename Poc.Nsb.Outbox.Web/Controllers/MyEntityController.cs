@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using NServiceBus;
+using NServiceBus.Outbox;
 
 using Poc.Nsb.Outbox.Core;
 using Poc.Nsb.Outbox.Infrastructure.Events;
