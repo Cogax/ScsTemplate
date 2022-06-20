@@ -8,8 +8,6 @@ public static class ConfigurationBuilderExtensions
 {
     public static void ConfigureDefaultConfig(this IConfigurationBuilder configBuilder, string environment, string contentRootPath, Action<IConfigurationBuilder>? configAction = null)
     {
-        configBuilder.Sources.Clear();
-
         configBuilder.AddEnvironmentVariables(prefix: "ASPNETCORE_");
 
         configBuilder.AddJsonFile(Path.Combine(Path.Combine(contentRootPath, "..", "Poc.Nsb.Outbox.Infrastructure"), "appsettings.infrastructure.json"), optional: true, reloadOnChange: true); // When running using ef migrations or dotnet run

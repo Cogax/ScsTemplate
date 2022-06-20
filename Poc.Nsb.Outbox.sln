@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Core", "Poc.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Infrastructure", "Poc.Nsb.Outbox.Infrastructure\Poc.Nsb.Outbox.Infrastructure.csproj", "{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C19AF977-A558-4BC1-8140-1355B0AA50A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.Nsb.Outbox.Tests", "Poc.Nsb.Outbox.Tests\Poc.Nsb.Outbox.Tests.csproj", "{89AF78F6-6F28-4C09-9B0F-AB640810D93A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,10 @@ Global
 		{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89AF78F6-6F28-4C09-9B0F-AB640810D93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89AF78F6-6F28-4C09-9B0F-AB640810D93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89AF78F6-6F28-4C09-9B0F-AB640810D93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89AF78F6-6F28-4C09-9B0F-AB640810D93A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +60,7 @@ Global
 		{912E9531-BE1A-4449-A5BF-0648C82F8541} = {2D872C29-3402-4BE4-99B0-D75D4AB2DB5D}
 		{12D71677-3007-43A2-8F79-C3FF5B5616CE} = {555FAA07-0FD1-43ED-8BA9-B269CB0BB524}
 		{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623} = {555FAA07-0FD1-43ED-8BA9-B269CB0BB524}
+		{89AF78F6-6F28-4C09-9B0F-AB640810D93A} = {C19AF977-A558-4BC1-8140-1355B0AA50A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF31DB44-E7CF-4225-83BB-07A28F51E678}
