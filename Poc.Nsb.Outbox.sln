@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployables", "Deployables"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{555FAA07-0FD1-43ED-8BA9-B269CB0BB524}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Core", "Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj", "{12D71677-3007-43A2-8F79-C3FF5B5616CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Core.Application", "Poc.Nsb.Outbox.Core.Application\Poc.Nsb.Outbox.Core.Application.csproj", "{12D71677-3007-43A2-8F79-C3FF5B5616CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.Nsb.Outbox.Infrastructure", "Poc.Nsb.Outbox.Infrastructure\Poc.Nsb.Outbox.Infrastructure.csproj", "{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{895807A4-1D29-4272-8620-6B343F477575}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Planzer.Pak.Messaging.NServiceBus", "Planzer.Pak.Messaging.NServiceBus\Planzer.Pak.Messaging.NServiceBus.csproj", "{A819F681-64FC-4A3B-A298-78B0AA7E90CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.Nsb.Outbox.Core.Domain", "Poc.Nsb.Outbox.Core.Domain\Poc.Nsb.Outbox.Core.Domain.csproj", "{4C7DCFB2-E005-4FB4-8340-04B249A61BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{A819F681-64FC-4A3B-A298-78B0AA7E90CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A819F681-64FC-4A3B-A298-78B0AA7E90CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A819F681-64FC-4A3B-A298-78B0AA7E90CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7DCFB2-E005-4FB4-8340-04B249A61BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7DCFB2-E005-4FB4-8340-04B249A61BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7DCFB2-E005-4FB4-8340-04B249A61BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7DCFB2-E005-4FB4-8340-04B249A61BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{4C4E3E67-CFD6-4E0F-8551-E3DB14F32623} = {895807A4-1D29-4272-8620-6B343F477575}
 		{89AF78F6-6F28-4C09-9B0F-AB640810D93A} = {C19AF977-A558-4BC1-8140-1355B0AA50A7}
 		{A819F681-64FC-4A3B-A298-78B0AA7E90CF} = {895807A4-1D29-4272-8620-6B343F477575}
+		{4C7DCFB2-E005-4FB4-8340-04B249A61BC5} = {555FAA07-0FD1-43ED-8BA9-B269CB0BB524}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF31DB44-E7CF-4225-83BB-07A28F51E678}

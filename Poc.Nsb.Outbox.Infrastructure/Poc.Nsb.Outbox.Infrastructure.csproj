@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
@@ -37,12 +38,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Planzer.Pak.Messaging.NServiceBus\Planzer.Pak.Messaging.NServiceBus.csproj" />
-    <ProjectReference Include="..\Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj" />
+    <ProjectReference Include="..\Poc.Nsb.Outbox.Core.Application\Poc.Nsb.Outbox.Core.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="Migrations\" />
+    <Folder Include="Adapters\Messaging\" />
+    <Folder Include="Adapters\Persistence\Common\Generated\" />
+    <Folder Include="Adapters\Persistence\Todo\Configurations\" />
+    <Folder Include="Adapters\Persistence\Todo\ValueConverters\" />
   </ItemGroup>
 
 </Project>

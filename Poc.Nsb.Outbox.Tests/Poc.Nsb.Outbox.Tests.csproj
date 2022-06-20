@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Poc.Nsb.Outbox.Core\Poc.Nsb.Outbox.Core.csproj" />
+    <ProjectReference Include="..\Poc.Nsb.Outbox.Core.Application\Poc.Nsb.Outbox.Core.Application.csproj" />
   </ItemGroup>
 
 </Project>

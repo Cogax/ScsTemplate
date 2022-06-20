@@ -74,7 +74,10 @@ beim verarbeiten von Messages mit anschliesendem Publish gewährleisten kann.
 
 ### Migrationen
 
-* Neue hinzufügen: `Add-Migration <migration-name> -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web`
+1. `git commit` damit der revert einfacher geht
+1. Migration hinzufügen: `Add-Migration <migration-name> -Context WriteModelDbContext -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web`
+1. Applikation starten, damit DB migriert wird 
+1. Read Model Context aus der DB generieren: `Scaffold-DbContext 'server=localhost;database=PocDb;user=sa;password=Top-Secret;' Microsoft.EntityFrameworkCore.SqlServer -DataAnnotations -Context ReadModelDbContext -ContextDir Adapters/Persistence/Common -OutputDir New/Adapters/SqlServer/Common/Generated -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web -NoPluralize -Force`
 
 
 # TODO

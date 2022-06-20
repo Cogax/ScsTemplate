@@ -10,7 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\Consistency\" />
+    <Folder Include="Common\Abstractions\" />
+    <Folder Include="Common\Exceptions\" />
+    <Folder Include="Common\Ports\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Poc.Nsb.Outbox.Core.Domain\Poc.Nsb.Outbox.Core.Domain.csproj" />
   </ItemGroup>
 
 </Project>

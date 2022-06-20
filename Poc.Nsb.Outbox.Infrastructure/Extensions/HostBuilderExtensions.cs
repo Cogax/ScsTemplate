@@ -6,12 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
-using NServiceBus.Features;
 
 using Planzer.Pak.Messaging.NServiceBus.WebOutbox;
 
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
 using Poc.Nsb.Outbox.Infrastructure.HostedServices;
-using Poc.Nsb.Outbox.Infrastructure.Model;
 
 namespace Poc.Nsb.Outbox.Infrastructure.Extensions;
 
@@ -72,7 +71,7 @@ public static class HostBuilderExtensions
                     
                     services.AddTransient<DbTransaction>(sp =>
                     {
-                        var dbContext = sp.GetRequiredService<PocDbContext>();
+                        var dbContext = sp.GetRequiredService<WriteModelDbContext>();
                         dbContext.Database.BeginTransaction();
                         var transaction = dbContext.Database.CurrentTransaction;
 

@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Poc.Nsb.Outbox.Core;
+using Poc.Nsb.Outbox.Core.Domain.Todo.Aggregates;
 
 
 namespace Poc.Nsb.Outbox.Tests
@@ -24,7 +25,7 @@ namespace Poc.Nsb.Outbox.Tests
             (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
 
             await client.DeleteAsync($"{WebUrl}/MyEntity");
-            (await client.GetAsync<MyEntity[]>($"{WebUrl}/MyEntity")).Should().BeEmpty();
+            (await client.GetAsync<TodoItem[]>($"{WebUrl}/MyEntity")).Should().BeEmpty();
         }
 
         [TestMethod]

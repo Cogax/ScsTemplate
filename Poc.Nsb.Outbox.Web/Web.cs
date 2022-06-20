@@ -1,5 +1,5 @@
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
 using Poc.Nsb.Outbox.Infrastructure.Extensions;
-using Poc.Nsb.Outbox.Infrastructure.Model;
 
 namespace Poc.Nsb.Outbox.Web;
 
@@ -19,7 +19,7 @@ public static class Web
         app.UseSwaggerUI();
         app.UseAuthorization();
         app.MapControllers();
-        app.Services.Migrate<PocDbContext>();
+        app.Services.Migrate<WriteModelDbContext>();
 
         return app;
     }
