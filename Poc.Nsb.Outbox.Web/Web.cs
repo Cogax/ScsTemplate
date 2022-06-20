@@ -8,7 +8,7 @@ public static class Web
     public static WebApplication BuildWeb(this WebApplicationBuilder builder)
     {
         builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
-        builder.Host.AddMessaging("Poc.Nsb.Outbox.Web", sendOnly: true);
+        builder.Host.AddMessaging("Poc.Nsb.Outbox.Web", enableSendOnly: true, enableWebOutbox: true, enableNsbOutbox: true);
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

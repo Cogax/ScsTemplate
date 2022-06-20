@@ -54,10 +54,10 @@ Via NSB können dann mehrere Transport Implementationen gekoppelt werden. Dabei 
 und der RabbitMQ Transport des `Worker` aneinandergekoppelt. Der `Worker` kann dann Messages direkt von der Datenbank
 statt RabbitMQ entgegennehmen und verarbeiten.
 
-> Im Moment gibt es mehrere Lösungsansätze: Einerseits [`NServiceBus.Router`](https://docs.particular.net/nservicebus/router/) und andererseits [`NServiceBus.Transport.Bridge`](https://docs.particular.net/nservicebus/bridge/) welche
-> beide dieses Problem angehen.
+> Im Moment gibt es mehrere Lösungsansätze:
 > * [`NServiceBus.Router`](https://docs.particular.net/nservicebus/router/) ist ein Community Projekt und hat keinen offiziellen NSB support.
 > * [`NServiceBus.Connector.SqlServer`](https://www.nuget.org/packages/NServiceBus.Connector.SqlServer) basiert auf `NServiceBus.Router` und vereinfacht dessen Handhabung
+> * [`https://github.com/peto268/NServiceBus.WebOutbox`](https://github.com/peto268/NServiceBus.WebOutbox) 
 > * [`NServiceBus.Transport.Bridge`](https://docs.particular.net/nservicebus/bridge/) ist eine offiziell supportete NSB Komponente, momentan existiert jedoch nur eine preview Version.
 
 Der `Worker` selbst hat das Outbox Feature aktiviert, wordurch beim behandeln von Messages die Konsistenz zwischen DB 
@@ -75,3 +75,8 @@ beim verarbeiten von Messages mit anschliesendem Publish gewährleisten kann.
 ### Migrationen
 
 * Neue hinzufügen: `Add-Migration <migration-name> -Project Poc.Nsb.Outbox.Infrastructure -StartupProject Poc.Nsb.Outbox.Web`
+
+
+# TODO
+* SendLocal prüfen
+* Sagas prüfen

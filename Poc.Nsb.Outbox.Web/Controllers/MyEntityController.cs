@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NServiceBus;
 using NServiceBus.Outbox;
 
+using Planzer.Pak.Messaging.NServiceBus.WebOutbox;
+
 using Poc.Nsb.Outbox.Core;
 using Poc.Nsb.Outbox.Infrastructure.Events;
 using Poc.Nsb.Outbox.Infrastructure.Model;
@@ -18,7 +20,7 @@ public class MyEntityController : ControllerBase
     public async Task<IActionResult> Create(
         string foo,
         bool exception,
-        [FromServices] IMessageSession messageSession,
+        [FromServices] WebOutboxMessageSession messageSession,
         [FromServices] PocDbContext db)
     {
         var entity = new MyEntity
