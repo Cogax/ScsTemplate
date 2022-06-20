@@ -34,5 +34,13 @@ namespace Poc.Nsb.Outbox.Tests
             response.IsSuccessStatusCode.Should().BeFalse();
             (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
         }
+
+        [TestMethod]
+        public async Task WennKeineException_DannSollEinEventGesendetWerden()
+        {
+            var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=false", null);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().HaveCount(1);
+        }
     }
 }
