@@ -54,10 +54,10 @@ Via NSB können dann mehrere Transport Implementationen gekoppelt werden. Dabei 
 und der RabbitMQ Transport des `Worker` aneinandergekoppelt. Der `Worker` kann dann Messages direkt von der Datenbank
 statt RabbitMQ entgegennehmen und verarbeiten.
 
-> Im Moment gibt es zwei Lösungen. Einerseits `NServiceBus.Router` und andererseits `NServiceBus.Transport.Bridge` welche
+> Im Moment gibt es zwei Lösungen. Einerseits [`NServiceBus.Router`](https://docs.particular.net/nservicebus/router/) und andererseits [`NServiceBus.Transport.Bridge`](https://docs.particular.net/nservicebus/bridge/) welche
 > beide dieses Problem angehen.
 > * `NServiceBus.Router` ist ein Community Projekt und hat keinen offiziellen NSB support.
-> * `NServiceBus.Transport.Bridge` ist eine offizielle NSB Komponente, momentan existiert jedoch nur eine preview Version.
+> * `NServiceBus.Transport.Bridge` ist eine offiziell supportete NSB Komponente, momentan existiert jedoch nur eine preview Version.
 
 Der `Worker` selbst hat das Outbox Feature aktiviert, wordurch beim behandeln von Messages die Konsistenz zwischen DB 
 und NSB gewährleistet werden kann. Auch `Web` benötigt ein aktives Outbox Feature, damit er ebenfalls die Konsistenz
