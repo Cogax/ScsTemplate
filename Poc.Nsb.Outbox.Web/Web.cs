@@ -1,4 +1,4 @@
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Contexts;
 using Poc.Nsb.Outbox.Infrastructure.Extensions;
 
 namespace Poc.Nsb.Outbox.Web;

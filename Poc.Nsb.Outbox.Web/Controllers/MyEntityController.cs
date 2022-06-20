@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using Planzer.Pak.Messaging.NServiceBus.WebOutbox;
 
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
-
 namespace Poc.Nsb.Outbox.Web.Controllers;
 
 [ApiController]

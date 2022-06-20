@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Poc.Nsb.Outbox.Core.Domain.Todo.Aggregates;
 using Poc.Nsb.Outbox.Core.Domain.Todo.ValueObjects;
 
-namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Todo.Configurations;
+namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Configurations;
 
 public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {

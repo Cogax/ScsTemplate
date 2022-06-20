@@ -9,7 +9,7 @@ using NServiceBus;
 
 using Planzer.Pak.Messaging.NServiceBus.WebOutbox;
 
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Contexts;
 using Poc.Nsb.Outbox.Infrastructure.HostedServices;
 
 namespace Poc.Nsb.Outbox.Infrastructure.Extensions;

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Poc.Nsb.Outbox.Core.Domain.Todo.Aggregates;
 using Poc.Nsb.Outbox.Core.Domain.Todo.ValueObjects;
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common.ValueConverters;
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.ValueConverters;
 
-namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
+namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Contexts;
 
 public class WriteModelDbContext : DbContext
 {

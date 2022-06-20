@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using Poc.Nsb.Outbox.Core.Domain.Todo.ValueObjects;
 
-namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common.ValueConverters;
+namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.ValueConverters;
 
 // EF Core
 public class TodoItemIdToGuidConverter : ValueConverter<TodoItemId, Guid>

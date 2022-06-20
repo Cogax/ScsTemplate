@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Contexts;
 
 namespace Poc.Nsb.Outbox.Infrastructure.Extensions;
 
