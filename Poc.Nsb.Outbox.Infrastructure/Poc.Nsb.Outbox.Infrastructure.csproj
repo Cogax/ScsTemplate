@@ -40,12 +40,4 @@
     <ProjectReference Include="..\Planzer.Pak.Messaging.NServiceBus\Planzer.Pak.Messaging.NServiceBus.csproj" />
     <ProjectReference Include="..\Poc.Nsb.Outbox.Core.Application\Poc.Nsb.Outbox.Core.Application.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Adapters\Messaging\" />
-    <Folder Include="Adapters\Persistence\Common\Generated\" />
-    <Folder Include="Adapters\Persistence\Todo\Configurations\" />
-    <Folder Include="Adapters\Persistence\Todo\ValueConverters\" />
-  </ItemGroup>
-
 </Project>

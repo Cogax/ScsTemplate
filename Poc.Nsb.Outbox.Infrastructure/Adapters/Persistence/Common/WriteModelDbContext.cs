@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Poc.Nsb.Outbox.Core.Domain.Todo.Aggregates;
 using Poc.Nsb.Outbox.Core.Domain.Todo.ValueObjects;
-using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Todo.ValueConverters;
+using Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common.ValueConverters;
 
 namespace Poc.Nsb.Outbox.Infrastructure.Adapters.Persistence.Common;
 
@@ -28,6 +28,8 @@ public class WriteModelDbContext : DbContext
 
         configurationBuilder.Properties<TodoItemId>().HaveConversion<TodoItemIdToGuidConverter>();
         SqlMapper.AddTypeHandler<TodoItemId>(new SortieranlageIdToLongTypeHandler());
+
+        configurationBuilder.Properties<Label>().HaveConversion<LabelToStringConverter>();
+        SqlMapper.AddTypeHandler<Label>(new LabelToStringTypeHandler());
     }
 }
-
