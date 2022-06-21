@@ -40,4 +40,8 @@
     <ProjectReference Include="..\Planzer.Pak.Messaging.NServiceBus\Planzer.Pak.Messaging.NServiceBus.csproj" />
     <ProjectReference Include="..\Poc.Nsb.Outbox.Core.Application\Poc.Nsb.Outbox.Core.Application.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Adapters\Persistence\Repositories\" />
+  </ItemGroup>
 </Project>

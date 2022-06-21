@@ -19,6 +19,8 @@
     <Folder Include="Common\Abstractions\" />
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Ports\" />
+    <Folder Include="Todo\DomainEventHandlers\" />
+    <Folder Include="Todo\Ports\" />
   </ItemGroup>
 
   <ItemGroup>

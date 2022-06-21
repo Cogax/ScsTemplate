@@ -6,21 +6,23 @@ namespace Poc.Nsb.Outbox.Core.Domain.Todo.Aggregates;
 
 public class TodoItem : AggregateRoot
 {
-    private readonly TodoItemId id;
+    public TodoItemId Id { get; }
     private Label label;
     private bool completed;
 
     public TodoItem(TodoItemId id, Label label)
     {
-        this.id = id;
+        Id = id;
         this.label = label;
         completed = false;
+        
+        AddDomainEvent(new TodoItemAddedDomainEvent(Id));
     }
 
     private TodoItem()
     {
         // EF Core
-        id = null!;
+        Id = null!;
         label = null!;
     }
 
@@ -29,11 +31,11 @@ public class TodoItem : AggregateRoot
         if (this.completed) return;
 
         this.completed = true;
-        AddDomainEvent(new TodoItemCompletedDomainEvent(id));
+        AddDomainEvent(new TodoItemCompletedDomainEvent(Id));
     }
 
     protected override IEnumerable<object> GetIdentityComponents()
     {
-        yield return id;
+        yield return Id;
     }
 }
