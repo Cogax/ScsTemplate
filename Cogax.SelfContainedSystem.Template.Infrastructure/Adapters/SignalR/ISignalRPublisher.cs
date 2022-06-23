@@ -1,6 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
 
-namespace Cogax.SelfContainedSystem.Template.Web.SignalR;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 
 public interface ISignalRPublisher
 {
@@ -9,11 +9,5 @@ public interface ISignalRPublisher
 
 public class NullSignalRPublisher : ISignalRPublisher
 {
-    public List<object> PublishedMessages { get; } = new();
-
-    public Task PublishTodoItem(TodoItemDescription vm)
-    {
-        PublishedMessages.Add(vm);
-        return Task.CompletedTask;
-    }
+    public Task PublishTodoItem(TodoItemDescription vm) => Task.CompletedTask;
 }

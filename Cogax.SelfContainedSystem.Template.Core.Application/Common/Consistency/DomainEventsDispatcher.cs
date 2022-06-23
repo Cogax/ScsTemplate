@@ -10,7 +10,7 @@ public interface IDomainEventsDispatcher
     Task DispatchEventsAsync(CancellationToken cancellationToken);
 }
 
-public class DomainEventsDispatcher : IDomainEventsDispatcher
+internal class DomainEventsDispatcher : IDomainEventsDispatcher
 {
     private readonly IPersistenceAdapter persistenceAdapter;
     private readonly IMediator mediator;

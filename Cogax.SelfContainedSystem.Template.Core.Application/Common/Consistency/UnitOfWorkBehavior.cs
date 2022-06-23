@@ -4,8 +4,6 @@ using MediatR;
 
 using Microsoft.Extensions.Logging;
 
-using ICommand = System.Windows.Input.ICommand;
-
 namespace Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 
 public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>

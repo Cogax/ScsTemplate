@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Consistency\" />
     <Folder Include="Common\Abstractions\" />
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Ports\" />

@@ -19,7 +19,7 @@ public class TodoItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string label, bool exceptionBeforeSave = false)
+    public async Task<IActionResult> Create(string label)
     {
         var command = new AddTodoItemCommand(new TodoItemId(Guid.NewGuid()), new Label(label));
         await _mediator.Send(command, HttpContext.RequestAborted);

@@ -42,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Adapters\Email\" />
     <Folder Include="Adapters\Persistence\ReadmodelProviders\" />
   </ItemGroup>
 

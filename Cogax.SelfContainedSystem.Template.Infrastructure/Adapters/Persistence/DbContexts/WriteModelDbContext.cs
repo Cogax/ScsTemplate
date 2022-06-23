@@ -1,12 +1,13 @@
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.ValueConverters;
 
 using Dapper;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 public class WriteModelDbContext : DbContext
 {

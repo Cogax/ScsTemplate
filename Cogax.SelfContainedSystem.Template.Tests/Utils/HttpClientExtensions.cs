@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Cogax.SelfContainedSystem.Template.Tests;
+namespace Cogax.SelfContainedSystem.Template.Tests.Utils;
 
 public static class HttpClientExtensions
 {

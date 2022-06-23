@@ -2,7 +2,7 @@ using Cogax.SelfContainedSystem.Template.Core.Application.Common.Exceptions;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 using Microsoft.EntityFrameworkCore;
 

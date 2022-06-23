@@ -1,7 +1,7 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 using Microsoft.EntityFrameworkCore;
 

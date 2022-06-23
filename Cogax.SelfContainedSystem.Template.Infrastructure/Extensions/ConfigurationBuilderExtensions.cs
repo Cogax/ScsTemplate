@@ -8,7 +8,7 @@ public static class ConfigurationBuilderExtensions
     {
         configBuilder.AddEnvironmentVariables(prefix: "ASPNETCORE_");
 
-        configBuilder.AddJsonFile(Path.Combine(Path.Combine(contentRootPath, "..", "Poc.Nsb.Outbox.Infrastructure"), "appsettings.infrastructure.json"), optional: true, reloadOnChange: true); // When running using ef migrations or dotnet run
+        configBuilder.AddJsonFile(Path.Combine(Path.Combine(contentRootPath, "..", "Cogax.SelfContainedSystem.Template.Infrastructure"), "appsettings.infrastructure.json"), optional: true, reloadOnChange: true); // When running using ef migrations or dotnet run
         configBuilder.AddJsonFile("appsettings.infrastructure.json", optional: true, reloadOnChange: true); // When app is published
         configBuilder.AddJsonFile($"appsettings.infrastructure.{environment}.json", optional: true, reloadOnChange: true);
         configBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);

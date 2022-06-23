@@ -2,7 +2,7 @@ using System.Data.Common;
 
 using Cogax.SelfContainedSystem.Template.Extensions.NServiceBus.WebOutbox;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.HostedServices;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;

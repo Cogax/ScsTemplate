@@ -1,8 +1,8 @@
-﻿using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Generated;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Generated;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts
 {
     public partial class ReadModelDbContext : DbContext
     {

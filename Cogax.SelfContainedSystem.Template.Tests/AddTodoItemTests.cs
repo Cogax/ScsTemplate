@@ -1,45 +1,91 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
+using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
+using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
+using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
+using Cogax.SelfContainedSystem.Template.Tests.Utils;
 
 using FluentAssertions;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Moq;
 
 namespace Cogax.SelfContainedSystem.Template.Tests
 {
     [TestClass]
     public class AddTodoItemTests
     {
-        private const string WorkerUrl = "http://localhost:5267";
-        private const string WebUrl = "http://localhost:5086";
-        private readonly HttpClient client = new();
+        private WebFactory _web = null!;
+        private WorkerFactory _worker = null!;
+        private HttpClient _webClient = null!;
+        private HttpClient _workerClient = null!;
+
+        private Mock<ISignalRPublisher> _signalRPublisherMock = null!;
+        private Mock<ITodoEmailPort> _emailPortMock = null!;
+        private Mock<IChaosMonkey> _chaosMonkeyMock = null!;
 
         [TestInitialize]
         public async Task SetUp()
         {
-            await client.DeleteAsync($"{WorkerUrl}/Store");
-            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
+            _signalRPublisherMock = new Mock<ISignalRPublisher>();
+            _emailPortMock = new Mock<ITodoEmailPort>();
+            _chaosMonkeyMock = new Mock<IChaosMonkey>();
 
-            await client.DeleteAsync($"{WebUrl}/MyEntity");
-            (await client.GetAsync<TodoItem[]>($"{WebUrl}/MyEntity")).Should().BeEmpty();
+            Action<IServiceCollection> servicesOverride = (services) =>
+            {
+                services.AddSingleton<ISignalRPublisher>(_signalRPublisherMock.Object);
+                services.AddSingleton<ITodoEmailPort>(_emailPortMock.Object);
+                services.AddSingleton<IChaosMonkey>(_chaosMonkeyMock.Object);
+            };
+
+            _web = new WebFactory(servicesOverride);
+            _worker = new WorkerFactory(servicesOverride);
+
+            _webClient = _web.CreateClient();
+            _workerClient = _worker.CreateClient();
+            
+            await _webClient.DeleteAsync("/TodoItem");
+        }
+
+        [TestCleanup]
+        public async Task CleanUp()
+        {
+            _webClient?.Dispose();
+            _workerClient?.Dispose();
+            await _web.DisposeAsync();
+            await _worker.DisposeAsync();
         }
 
         [TestMethod]
         public async Task WhenNoExceptionBeforeCommit_ThenEventIsPublished()
         {
-            var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=false", null);
-            response.IsSuccessStatusCode.Should().BeTrue();
-            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().HaveCount(1);
+            // Arrange
+            // Act
+            await _webClient.PostAsync("/TodoItem?label=test", null);
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
         }
 
         [TestMethod]
         public async Task WhenExceptionBeforeCommitOccurs_ThenNoEventIsPublished()
         {
-            var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=true", null);
+            // Arrange
+            _chaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
+
+            // Act
+            var response = await _webClient.PostAsync("/TodoItem?label=test", null);
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
             response.IsSuccessStatusCode.Should().BeFalse();
-            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
+            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Never);
         }
     }
 }
