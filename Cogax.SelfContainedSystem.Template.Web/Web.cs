@@ -1,4 +1,6 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
 namespace Cogax.SelfContainedSystem.Template.Web;

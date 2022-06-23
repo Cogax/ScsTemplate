@@ -2,7 +2,7 @@ using Cogax.SelfContainedSystem.Template.Extensions.NServiceBus.WebOutbox;
 
 using Microsoft.Extensions.Hosting;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.HostedServices;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.HostedServices;
 
 public class WebOutboxStarter : IHostedService
 {

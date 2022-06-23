@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Cogax.SelfContainedSystem.Template.Core.Application.Todo.Commands;
 
-public record ClearTodoItemsCommand() : ICommand;
+public record ClearTodoItemsCommand : ICommand;
 
 internal class ClearTodoItemsCommandHandler : ICommandHandler<ClearTodoItemsCommand>
 {

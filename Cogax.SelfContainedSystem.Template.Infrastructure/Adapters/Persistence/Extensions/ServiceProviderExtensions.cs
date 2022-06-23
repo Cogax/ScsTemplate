@@ -1,7 +1,9 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 
 public static class ServiceProviderExtensions
 {

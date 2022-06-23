@@ -1,3 +1,4 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
 namespace Cogax.SelfContainedSystem.Template.Worker;

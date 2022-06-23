@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Cogax.SelfContainedSystem.Template.Tests
 {
     [TestClass]
-    public class Scenario1
+    public class AddTodoItemTests
     {
         private const string WorkerUrl = "http://localhost:5267";
         private const string WebUrl = "http://localhost:5086";
@@ -27,19 +27,19 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task WennExceptionVorSave_DannSollKeinEventGesendetWerden()
-        {
-            var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=true", null);
-            response.IsSuccessStatusCode.Should().BeFalse();
-            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public async Task WennKeineException_DannSollEinEventGesendetWerden()
+        public async Task WhenNoExceptionBeforeCommit_ThenEventIsPublished()
         {
             var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=false", null);
             response.IsSuccessStatusCode.Should().BeTrue();
             (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().HaveCount(1);
+        }
+
+        [TestMethod]
+        public async Task WhenExceptionBeforeCommitOccurs_ThenNoEventIsPublished()
+        {
+            var response = await client.PostAsync($"{WebUrl}/MyEntity?foo=test&exception=true", null);
+            response.IsSuccessStatusCode.Should().BeFalse();
+            (await client.GetAsync<object[]>($"{WorkerUrl}/Store")).Should().BeEmpty();
         }
     }
 }

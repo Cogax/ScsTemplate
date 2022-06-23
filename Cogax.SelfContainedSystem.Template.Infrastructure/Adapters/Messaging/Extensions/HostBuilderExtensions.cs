@@ -1,8 +1,8 @@
 using System.Data.Common;
 
 using Cogax.SelfContainedSystem.Template.Extensions.NServiceBus.WebOutbox;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.HostedServices;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Contexts;
-using Cogax.SelfContainedSystem.Template.Infrastructure.HostedServices;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 
 public static class HostBuilderExtensions
 {
@@ -26,7 +26,8 @@ public static class HostBuilderExtensions
             EndpointConfiguration endpointConfiguration = new(endpointName);
             endpointConfiguration.EnableInstallers(); // Damit Queues etc. beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
             endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
-            if(enableNsbOutbox) {
+            if (enableNsbOutbox)
+            {
                 endpointConfiguration.EnableOutbox(); // Outbox aktivieren
             }
 
@@ -60,15 +61,15 @@ public static class HostBuilderExtensions
                     transport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Db"]);
                 });
 
-                webOutboxConfiguration.ConfigureDestinationTransport<RabbitMQTransport>(configureRabbitMq);
+                webOutboxConfiguration.ConfigureDestinationTransport(configureRabbitMq);
                 webOutboxConfiguration.AutoCreateQueues();
 
                 hostBuilder.ConfigureServices((context, services) =>
                 {
                     // TODO: Evtl. Fallback, dass eine neue Connection und / oder Transaction aufgebaut wird,
                     // falls keine vorhanden ist.
-                    
-                    services.AddTransient<DbTransaction>(sp =>
+
+                    services.AddTransient(sp =>
                     {
                         var dbContext = sp.GetRequiredService<WriteModelDbContext>();
                         dbContext.Database.BeginTransaction();
@@ -79,19 +80,19 @@ public static class HostBuilderExtensions
 
                         return transaction.GetDbTransaction();
                     });
-                    
-                    services.AddSingleton<WebOutboxConfiguration>(webOutboxConfiguration);
-                    services.AddSingleton<WebOutbox>(sp =>
+
+                    services.AddSingleton(webOutboxConfiguration);
+                    services.AddSingleton(sp =>
                         sp.GetRequiredService<WebOutboxConfiguration>().WebOutbox ??
                         throw new Exception("WebOutbox is null"));
-                    services.AddTransient<WebOutboxMessageSession>(sp =>
+                    services.AddTransient(sp =>
                         (WebOutboxMessageSession)sp.GetRequiredService<WebOutbox>().CreateMessageSession(() =>
                             TransportTransactionFactory.CreateFromDbTransaction(
                                 sp.GetRequiredService<DbTransaction>())));
                     services.AddHostedService<WebOutboxStarter>();
                 });
             }
-            
+
             // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
             // aber keine Abonnieren, Handeln oder Subscriben.
             if (enableSendOnly)

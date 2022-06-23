@@ -16,7 +16,7 @@ welcher allein für asynchrone Operationen gedacht ist (ist jedoch auch ein auch
   * Out of Scope
     * Konsistenz zwischen DB und SignalR
     * Konsistenz zwischen NSB und SignalR 
-* `Web2` - *Nur Publish (SendOnly)*
+* `SendOnlyWeb` - *Nur Publish (SendOnly)*
   * Use Cases
     * Publiziert NSB Messages (bspw. bei erfolgreichem API call)
     * Modifiziert die Datenbank
