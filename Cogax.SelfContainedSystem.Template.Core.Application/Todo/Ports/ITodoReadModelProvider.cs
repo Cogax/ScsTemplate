@@ -6,4 +6,5 @@ namespace Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 public interface ITodoReadModelProvider
 {
     Task<TodoItemDescription> GetTodoItemDescription(TodoItemId id, CancellationToken cancellationToken);
+    Task<IEnumerable<TodoItemDescription>> GetAllTodoItemDescriptions(CancellationToken cancellationToken);
 }

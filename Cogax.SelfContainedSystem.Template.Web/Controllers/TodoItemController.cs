@@ -1,4 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Commands;
+using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Queries;
+using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
 
 using MediatR;
@@ -30,6 +32,22 @@ public class TodoItemController : ControllerBase
     public async Task<IActionResult> DeleteAll()
     {
         var command = new ClearTodoItemsCommand();
+        await _mediator.Send(command, HttpContext.RequestAborted);
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IEnumerable<TodoItemDescription>> GetAll()
+    {
+        var query = new GetAllTodoItemsQuery();
+        var result = await _mediator.Send(query, HttpContext.RequestAborted);
+        return result;
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Complete(Guid id)
+    {
+        var command = new CompleteTodoItemCommand(new TodoItemId(id));
         await _mediator.Send(command, HttpContext.RequestAborted);
         return Ok();
     }

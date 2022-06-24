@@ -21,4 +21,11 @@ public class TodoReadmodelProvider : ITodoReadModelProvider
         var todoItem = await _readModelDb.TodoItems.SingleAsync(i => i.Id == id.Value, cancellationToken);
         return new TodoItemDescription(todoItem.Id, todoItem.Label, todoItem.Completed);
     }
+
+    public async Task<IEnumerable<TodoItemDescription>> GetAllTodoItemDescriptions(CancellationToken cancellationToken)
+    {
+        return await _readModelDb.TodoItems
+            .Select(i => new TodoItemDescription(i.Id, i.Label, i.Completed))
+            .ToListAsync(cancellationToken);
+    }
 }

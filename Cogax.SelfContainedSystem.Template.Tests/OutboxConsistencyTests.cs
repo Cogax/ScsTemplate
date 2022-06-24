@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
+using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 using Cogax.SelfContainedSystem.Template.Tests.Utils;
 
@@ -18,7 +22,7 @@ using Moq;
 namespace Cogax.SelfContainedSystem.Template.Tests
 {
     [TestClass]
-    public class HangfireOutboxTests
+    public class OutboxConsistencyTests
     {
         private WebFactory _web = null!;
         private WorkerFactory _worker = null!;
@@ -59,7 +63,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task WhenNoExceptionBeforeCommit_ThenEventIsPublished()
+        public async Task CreateTodoItem_WhenNoException_ThenSignalRPublishesNewTodoItem()
         {
             // Arrange
             // Act
@@ -71,7 +75,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task WhenExceptionBeforeCommitOccurs_ThenNoEventIsPublished()
+        public async Task CreateTodoItem_WhenExceptionBeforeCommitOccurs_ThenNoSignalRPublish()
         {
             // Arrange
             _chaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
@@ -86,7 +90,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task WhenExceptionBecauseOfUniqueConstraint_ThenNoEventIsPublished()
+        public async Task CreateTodoItem_WhenExceptionBecauseOfUniqueConstraint_ThenNoSignalRPublish()
         {
             // Arrange
             var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
@@ -99,6 +103,26 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task CompleteTodoItem_WhenNoException_ThenSignalRPublishesRemovedTodoItem()
+        {
+            // Arrange
+            var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            var response2 = await _webClient.GetAsync("/TodoItem");
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            var todoItem = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single(); 
+
+            // Act
+            var response = await _webClient.PutAsync($"/TodoItem?id={todoItem.Id}", null);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.Is<TodoItemDescription?>(x => x == null)), Times.Once);
         }
     }
 }
