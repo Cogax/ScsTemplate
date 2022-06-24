@@ -1,4 +1,5 @@
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Email;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
@@ -15,6 +16,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddPersistenceAdapter(configuration);
         services.AddSignalRAdapter(configuration);
         services.AddMessagingAdapter(configuration);
+        services.AddHangfireAdapter(configuration);
         services.AddEmailAdapter(configuration);
 
         return services;

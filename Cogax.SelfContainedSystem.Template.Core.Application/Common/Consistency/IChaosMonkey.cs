@@ -5,6 +5,7 @@ public interface IChaosMonkey
     void OnUowCommit();
     void OnWebNsbHandle();
     void OnWorkerNsbHandle();
+    void OnOutboxAdded();
 }
 
 public class NullChaosMonkey : IChaosMonkey
@@ -12,4 +13,5 @@ public class NullChaosMonkey : IChaosMonkey
     public void OnUowCommit(){}
     public void OnWebNsbHandle(){}
     public void OnWorkerNsbHandle(){}
+    public void OnOutboxAdded(){}
 }

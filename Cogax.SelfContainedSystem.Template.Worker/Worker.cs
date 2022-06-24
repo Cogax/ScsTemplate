@@ -1,5 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application;
 using Cogax.SelfContainedSystem.Template.Core.Domain;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
@@ -18,6 +19,7 @@ public static class Worker
         builder.Services.AddSwaggerGen();
         builder.Services.AddMediatR(typeof(Worker));
         builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddHangfireServerAdapter(builder.Configuration);
         builder.Services.AddCoreApplication();
         builder.Services.AddCoreDomain();
 
