@@ -80,3 +80,4 @@ beim verarbeiten von Messages mit anschliesendem Publish gewährleisten kann.
 * Optimistic Concurrency Tests
 * Worker Handle mit Exception
 * Web.Worker Handle mit Exception
+* Dapper sql command + transaction

@@ -26,20 +26,17 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         private HttpClient _workerClient = null!;
 
         private Mock<ISignalRPublisher> _signalRPublisherMock = null!;
-        private Mock<ITodoEmailPort> _emailPortMock = null!;
         private Mock<IChaosMonkey> _chaosMonkeyMock = null!;
 
         [TestInitialize]
         public async Task SetUp()
         {
             _signalRPublisherMock = new Mock<ISignalRPublisher>();
-            _emailPortMock = new Mock<ITodoEmailPort>();
             _chaosMonkeyMock = new Mock<IChaosMonkey>();
 
             Action<IServiceCollection> servicesOverride = (services) =>
             {
                 services.AddSingleton(_signalRPublisherMock.Object);
-                services.AddSingleton(_emailPortMock.Object);
                 services.AddSingleton(_chaosMonkeyMock.Object);
             };
 

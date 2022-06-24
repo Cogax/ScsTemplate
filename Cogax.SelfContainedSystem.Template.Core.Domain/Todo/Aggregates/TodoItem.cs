@@ -9,6 +9,7 @@ public class TodoItem : AggregateRoot
     public TodoItemId Id { get; }
     private Label label;
     private bool completed;
+    private bool removed;
 
     public TodoItem(TodoItemId id, Label label)
     {
@@ -31,6 +32,14 @@ public class TodoItem : AggregateRoot
         if (this.completed) return;
 
         this.completed = true;
+        AddDomainEvent(new TodoItemCompletedDomainEvent(Id));
+    }
+
+    public void Remove()
+    {
+        if (this.removed) return;
+
+        this.removed = true;
         AddDomainEvent(new TodoItemCompletedDomainEvent(Id));
     }
 

@@ -6,4 +6,5 @@ public interface ITodoMessagingPort
 {
     Task SendIntegrationEvent(TodoItemAddedDomainEvent domainEvent, CancellationToken cancellationToken = default);
     Task SendIntegrationEvent(TodoItemCompletedDomainEvent domainEvent, CancellationToken cancellationToken = default);
+    Task SendIntegrationEvent(TodoItemRemovedDomainEvent domainEvent, CancellationToken cancellationToken = default);
 }

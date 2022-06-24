@@ -34,4 +34,14 @@ public class TodoMessagingAdapter : ITodoMessagingPort
             TodoItemId = domainEvent.TodoItemId.Value
         });
     }
+
+    public async Task SendIntegrationEvent(
+        TodoItemRemovedDomainEvent domainEvent,
+        CancellationToken cancellationToken = default)
+    {
+        await _messageSession.Publish(new TodoItemRemovedIntegrationEvent
+        {
+            TodoItemId = domainEvent.TodoItemId.Value
+        });
+    }
 }

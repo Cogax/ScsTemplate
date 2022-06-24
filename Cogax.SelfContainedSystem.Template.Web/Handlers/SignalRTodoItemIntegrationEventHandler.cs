@@ -12,7 +12,8 @@ namespace Cogax.SelfContainedSystem.Template.Web.Handlers;
 
 public class SignalRTodoItemIntegrationEventHandler :
     IHandleMessages<TodoItemCompletedIntegrationEvent>,
-    IHandleMessages<TodoItemAddedIntegrationEvent>
+    IHandleMessages<TodoItemAddedIntegrationEvent>,
+    IHandleMessages<TodoItemRemovedIntegrationEvent>
 {
     private readonly IMediator _mediator;
     private readonly ISignalRPublisher _signalRPublisher;
@@ -40,5 +41,11 @@ public class SignalRTodoItemIntegrationEventHandler :
         _chaosMonkey.OnWebNsbHandle();
         var readModel = await _mediator.Send(new GetTodoItemDescriptionQuery(new TodoItemId(message.TodoItemId)));
         await _signalRPublisher.PublishTodoItem(readModel);
+    }
+
+    public async Task Handle(TodoItemRemovedIntegrationEvent message, IMessageHandlerContext context)
+    {
+        _chaosMonkey.OnWebNsbHandle();
+        await _signalRPublisher.PublishTodoItem(null);
     }
 }

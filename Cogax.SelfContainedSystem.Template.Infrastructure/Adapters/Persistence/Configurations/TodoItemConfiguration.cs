@@ -14,7 +14,9 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.Property(x => x.Id).HasColumnName("Id");
         builder.Property<Label>("label").HasColumnName("Label").HasMaxLength(Label.MaxLength);
         builder.Property<bool>("completed").HasColumnName("Completed");
+        builder.Property<bool>("removed").HasColumnName("Removed");
         builder.Property<int>("version").HasColumnName("Version").IsConcurrencyToken();
         builder.HasIndex("label").IsUnique(); // UoW testing purposes
+        builder.HasIndex("removed").IsUnique(); // UoW testing purposes
     }
 }
