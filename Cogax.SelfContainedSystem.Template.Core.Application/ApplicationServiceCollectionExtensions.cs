@@ -1,4 +1,4 @@
-using Cogax.SelfContainedSystem.Template.Core.Application.Common;
+using Cogax.SelfContainedSystem.Template.Core.Application.Common.Extensions;
 
 using Microsoft.Extensions.DependencyInjection;
 

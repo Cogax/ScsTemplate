@@ -19,13 +19,14 @@ public static class HostBuilderExtensions
         string endpointName,
         bool enableSendOnly,
         bool enableWebOutbox,
-        bool enableNsbOutbox)
+        bool enableNsbOutbox,
+        bool enablePurgeAtStartup = false)
     {
         hostBuilder.UseNServiceBus(hostBuilderContext =>
         {
             EndpointConfiguration endpointConfiguration = new(endpointName);
             endpointConfiguration.EnableInstallers(); // Damit Queues etc. beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
-            endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
+            endpointConfiguration.PurgeOnStartup(enablePurgeAtStartup); // Damit Queues beim Startup immer leer sind (DEV Mode)
             if (enableNsbOutbox)
             {
                 endpointConfiguration.EnableOutbox(); // Outbox aktivieren
@@ -37,6 +38,7 @@ public static class HostBuilderExtensions
             var sqlPersistence = endpointConfiguration.UsePersistence<SqlPersistence>();
             sqlPersistence.ConnectionBuilder(() => new SqlConnection(hostBuilderContext.Configuration["ConnectionStrings:Db"]));
             sqlPersistence.SqlDialect<SqlDialect.MsSqlServer>();
+            sqlPersistence.TablePrefix("NSB_");
 
             // Transport
             // Der NSB Transport definiert wo die Messages gesendet werden. Es gibt Transporte für
@@ -54,11 +56,13 @@ public static class HostBuilderExtensions
                 var webOutboxConfiguration = new WebOutboxConfiguration(
                     outboxEndpointName: $"{endpointName}.WebOutbox",
                     destinationEndpointName: endpointName,
-                    poisonMessageQueue: "poison");
+                    poisonMessageQueue: $"{endpointName}.WebOutbox.Poison");
 
                 webOutboxConfiguration.ConfigureOutboxTransport<SqlServerTransport>(transport =>
                 {
                     transport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Db"]);
+                    if(enablePurgeAtStartup)
+                        transport.PurgeExpiredMessagesOnStartup(null); // TESTS Only
                 });
 
                 webOutboxConfiguration.ConfigureDestinationTransport(configureRabbitMq);

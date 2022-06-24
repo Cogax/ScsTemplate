@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Poc.Nsb.Outbox": {
+    "Cogax.SelfContainedSystem.Template": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

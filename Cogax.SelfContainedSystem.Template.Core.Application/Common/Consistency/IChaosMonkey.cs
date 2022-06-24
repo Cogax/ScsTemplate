@@ -6,3 +6,10 @@ public interface IChaosMonkey
     void OnWebNsbHandle();
     void OnWorkerNsbHandle();
 }
+
+public class NullChaosMonkey : IChaosMonkey
+{
+    public void OnUowCommit(){}
+    public void OnWebNsbHandle(){}
+    public void OnWorkerNsbHandle(){}
+}

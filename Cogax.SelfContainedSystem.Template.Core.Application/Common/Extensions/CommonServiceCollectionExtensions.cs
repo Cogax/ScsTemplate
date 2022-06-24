@@ -5,7 +5,7 @@ using MediatR;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Cogax.SelfContainedSystem.Template.Core.Application.Common;
+namespace Cogax.SelfContainedSystem.Template.Core.Application.Common.Extensions;
 
 internal static class CommonServiceCollectionExtensions
 {
@@ -20,6 +20,7 @@ internal static class CommonServiceCollectionExtensions
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDomainEventsDispatcher, DomainEventsDispatcher>();
+        services.AddSingleton<IChaosMonkey, NullChaosMonkey>();
 
         return services;
     }

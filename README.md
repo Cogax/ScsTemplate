@@ -70,7 +70,7 @@ beim verarbeiten von Messages mit anschliesendem Publish gewährleisten kann.
 ### Starten
 
 * `docker-compose up`
-* `Poc.Nsb.Outbox.Web` und `Poc.Nsb.Outbox.Worker` im Visual Studio laufen lassen
+* `Cogax.SelfContainedSystem.Template.Web` und `Cogax.SelfContainedSystem.Template.Worker` im Visual Studio laufen lassen
 
 
 # TODO
