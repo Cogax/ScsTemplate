@@ -4,7 +4,9 @@ namespace Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency
 
 public interface IUnitOfWork
 {
-    Task<int> CommitAsync(CancellationToken cancellationToken);
+    Task<T> ExecuteOperation<T>(
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken);
 }
 
 public class UnitOfWork : IUnitOfWork
@@ -23,11 +25,16 @@ public class UnitOfWork : IUnitOfWork
         _chaosMonkey = chaosMonkey;
     }
 
-    public async Task<int> CommitAsync(CancellationToken cancellationToken)
+    public async Task<T> ExecuteOperation<T>(Func<CancellationToken, Task<T>> operation, CancellationToken cancellationToken)
     {
-        // Dispatch all pending Domain Events in memory
-        await domainEventsDispatcher.DispatchEventsAsync(cancellationToken);
-        _chaosMonkey.OnUowCommit();
-        return await persistenceAdapter.SaveChangesAsync(cancellationToken);
+        return await persistenceAdapter.ExecuteWithTransactionAsync(
+            operation: async (cToken) =>
+            {
+                var result = await operation(cToken);
+                await domainEventsDispatcher.DispatchEventsAsync(cancellationToken);
+                _chaosMonkey.OnUowCommit();
+                return result;
+            },
+            cancellationToken: cancellationToken);
     }
 }

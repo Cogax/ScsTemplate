@@ -29,8 +29,8 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             (request.GetType().IsGenericType && request.GetType().GetGenericTypeDefinition() == typeof(ICommand<>)))
         {
             logger.LogDebug($"CommandUnitOfWorkBehavior: Before handle request. UnitOfWork: {unitOfWork.GetHashCode()}");
-            var response = await next();
-            await unitOfWork.CommitAsync(cancellationToken);
+
+            var response = await unitOfWork.ExecuteOperation(async (cToken) => await next(), cancellationToken);
             logger.LogDebug($"CommandUnitOfWorkBehavior: After handle request. UnitOfWork: {unitOfWork.GetHashCode()}");
 
             return response;
