@@ -18,7 +18,7 @@ using Moq;
 namespace Cogax.SelfContainedSystem.Template.Tests
 {
     [TestClass]
-    public class AddTodoItemTests
+    public class HangfireOutboxTests
     {
         private WebFactory _web = null!;
         private WorkerFactory _worker = null!;
@@ -38,9 +38,9 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             Action<IServiceCollection> servicesOverride = (services) =>
             {
-                services.AddSingleton<ISignalRPublisher>(_signalRPublisherMock.Object);
-                services.AddSingleton<ITodoEmailPort>(_emailPortMock.Object);
-                services.AddSingleton<IChaosMonkey>(_chaosMonkeyMock.Object);
+                services.AddSingleton(_signalRPublisherMock.Object);
+                services.AddSingleton(_emailPortMock.Object);
+                services.AddSingleton(_chaosMonkeyMock.Object);
             };
 
             _web = new WebFactory(servicesOverride);
@@ -81,11 +81,27 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Act
             var response = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response.IsSuccessStatusCode.Should().BeFalse();
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             // Assert
-            response.IsSuccessStatusCode.Should().BeFalse();
             _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Never);
+        }
+
+        [TestMethod]
+        public async Task WhenExceptionBecauseOfUniqueConstraint_ThenNoEventIsPublished()
+        {
+            // Arrange
+            var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            // Act
+            var response = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response.IsSuccessStatusCode.Should().BeFalse();
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
         }
     }
 }

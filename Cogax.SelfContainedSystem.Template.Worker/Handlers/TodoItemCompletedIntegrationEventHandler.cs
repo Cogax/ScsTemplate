@@ -1,7 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Commands;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
-using Cogax.SelfContainedSystem.Template.Infrastructure;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Contracts;
 
 using MediatR;
