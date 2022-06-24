@@ -78,3 +78,5 @@ beim verarbeiten von Messages mit anschliesendem Publish gewährleisten kann.
 * Sagas prüfen
 * UoW Tests
 * Optimistic Concurrency Tests
+* Worker Handle mit Exception
+* Web.Worker Handle mit Exception
