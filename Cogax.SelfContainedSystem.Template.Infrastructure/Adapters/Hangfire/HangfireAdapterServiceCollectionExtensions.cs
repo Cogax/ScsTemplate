@@ -64,11 +64,6 @@ public static class HangfireAdapterServiceCollectionExtensions
         if (nsbMessageSessionImplementationFactory == null)
             throw new Exception("Hangfire Outbox must be registered after NServiceBus!");
         
-        services.AddScoped<IBackgroundJobClient>(sp =>
-            new BackgroundJobClient(new SqlServerStorage(
-                sp.GetRequiredService<WriteModelDbContext>().Database.GetDbConnection(),
-                sp.GetRequiredService<SqlServerStorageOptions>())));
-
         services.Replace(new ServiceDescriptor(typeof(IBackgroundJobClient), sp =>
             new BackgroundJobClient(new SqlServerStorage(
                 sp.GetRequiredService<WriteModelDbContext>().Database.GetDbConnection(),
