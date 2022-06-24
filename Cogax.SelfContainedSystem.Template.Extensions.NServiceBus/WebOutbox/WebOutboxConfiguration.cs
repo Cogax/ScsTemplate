@@ -22,7 +22,10 @@ public class WebOutboxConfiguration
 
     public WebOutbox? WebOutbox { get; private set; }
 
-	public WebOutboxConfiguration(string outboxEndpointName, string destinationEndpointName, string poisonMessageQueue)
+	public WebOutboxConfiguration(
+        string outboxEndpointName,
+        string destinationEndpointName,
+        string poisonMessageQueue)
     {
 		Guard.AgainstNullAndEmpty(outboxEndpointName, nameof(outboxEndpointName));
 		Guard.AgainstNullAndEmpty(destinationEndpointName, nameof(destinationEndpointName));

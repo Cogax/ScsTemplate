@@ -14,5 +14,6 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.Property(x => x.Id).HasColumnName("Id");
         builder.Property<Label>("label").HasColumnName("Label").HasMaxLength(Label.MaxLength);
         builder.Property<bool>("completed").HasColumnName("Completed");
+        builder.Property<int>("version").HasColumnName("Version").IsConcurrencyToken();
     }
 }

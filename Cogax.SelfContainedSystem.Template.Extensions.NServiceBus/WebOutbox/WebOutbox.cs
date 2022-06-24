@@ -10,8 +10,10 @@ public class WebOutbox
     private readonly IStoppableRawEndpoint _forwarderEndpoint;
     private readonly IStoppableRawEndpoint _destinationEndpoint;
 
-    internal WebOutbox(IEndpointInstance outboxEndpoint,
-        IStoppableRawEndpoint forwarderEndpoint, IStoppableRawEndpoint destinationEndpoint)
+    internal WebOutbox(
+        IEndpointInstance outboxEndpoint,
+        IStoppableRawEndpoint forwarderEndpoint,
+        IStoppableRawEndpoint destinationEndpoint)
     {
         _outboxEndpoint = outboxEndpoint;
         _forwarderEndpoint = forwarderEndpoint;
