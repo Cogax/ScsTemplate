@@ -2,8 +2,7 @@ using Cogax.SelfContainedSystem.Template.Core.Application;
 using Cogax.SelfContainedSystem.Template.Core.Domain;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Migrations;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
 using Hangfire;
@@ -16,8 +15,10 @@ public static class Web
 {
     public static WebApplication BuildWeb(this WebApplicationBuilder builder)
     {
+        Migrator.Migrate();
+
         builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
-        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Web", enableSendOnly: true, enableNsbOutbox: true);
+        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Web", enableSendOnly: true, enablePurgeAtStartup: true);
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -26,7 +27,7 @@ public static class Web
         builder.Services.AddHangfireOutboxAdapter(builder.Configuration);
         builder.Services.AddCoreApplication();
         builder.Services.AddCoreDomain();
-
+        
         var app = builder.Build();
         app.UseSwagger();
         app.UseSwaggerUI();
@@ -38,7 +39,6 @@ public static class Web
             IgnoreAntiforgeryToken = true,
             Authorization = new[] { new HangfireDashboardAuthorizationFilter() }
         });
-        app.Services.Migrate<WriteModelDbContext>();
 
         return app;
     }

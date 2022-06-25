@@ -1,7 +1,11 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
+
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
+using NServiceBus.Persistence.Sql;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
 
@@ -10,7 +14,6 @@ public static class HostBuilderExtensions
     public static IHostBuilder AddMessaging(this IHostBuilder hostBuilder,
         string endpointName,
         bool enableSendOnly,
-        bool enableNsbOutbox,
         bool enablePurgeAtStartup = false)
     {
         hostBuilder.UseNServiceBus(hostBuilderContext =>
@@ -22,8 +25,7 @@ public static class HostBuilderExtensions
                 .Recoverability()
                 .Immediate(i => i.NumberOfRetries(0))
                 .Delayed(d => d.NumberOfRetries(0));
-            if (enableNsbOutbox)
-                endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
+            endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
 
             // Persistence
             // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie
@@ -39,6 +41,19 @@ public static class HostBuilderExtensions
             var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
+
+            // Unit of Work
+            endpointConfiguration.RegisterComponents(c =>
+            {
+                c.ConfigureComponent(b =>
+                {
+                    var session = b.Build<ISqlStorageSession>();
+                    var context = b.Build<WriteModelDbContext>();
+                    context.Database.UseTransaction(session.Transaction);
+                    session.OnSaveChanges(s => context.SaveChangesAsync());
+                    return context;
+                }, DependencyLifecycle.InstancePerUnitOfWork);
+            });
 
             // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
             // aber keine Abonnieren, Handeln oder Subscriben.

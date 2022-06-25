@@ -4,7 +4,7 @@ namespace Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
 public static class ConfigurationBuilderExtensions
 {
-    public static void ConfigureDefaultConfig(this IConfigurationBuilder configBuilder, string environment, string contentRootPath, Action<IConfigurationBuilder>? configAction = null)
+    public static IConfigurationBuilder ConfigureDefaultConfig(this IConfigurationBuilder configBuilder, string environment, string contentRootPath, Action<IConfigurationBuilder>? configAction = null)
     {
         configBuilder.AddEnvironmentVariables(prefix: "ASPNETCORE_");
 
@@ -16,5 +16,6 @@ public static class ConfigurationBuilderExtensions
         configBuilder.AddEnvironmentVariables();
 
         configAction?.Invoke(configBuilder); // Inject additional configuration (tests)
+        return configBuilder;
     }
 }

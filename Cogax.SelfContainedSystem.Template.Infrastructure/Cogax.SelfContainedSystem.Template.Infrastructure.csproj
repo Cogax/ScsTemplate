@@ -37,7 +37,6 @@
     <PackageReference Include="NServiceBus.Extensions.Hosting" Version="1.1.0" />
     <PackageReference Include="NServiceBus.Persistence.Sql" Version="6.5.1" />
     <PackageReference Include="NServiceBus.RabbitMQ" Version="6.1.1" />
-    <PackageReference Include="NServiceBus.Transport.SqlServer" Version="6.3.3" />
   </ItemGroup>
 
   <ItemGroup>

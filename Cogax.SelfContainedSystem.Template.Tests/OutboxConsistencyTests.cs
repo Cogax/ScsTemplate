@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 using Cogax.SelfContainedSystem.Template.Tests.Utils;
 
@@ -61,7 +62,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task CreateTodoItem_WhenNoException_ThenSignalRPublishesNewTodoItem()
+        public async Task CreateTodoItem_WhenNoException_ThenSignalRInvoked()
         {
             // Arrange
             // Act
@@ -73,7 +74,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task CreateTodoItem_WhenExceptionBeforeCommitOccurs_ThenNoSignalRPublish()
+        public async Task CreateTodoItem_WhenExceptionBeforeCommitOccurs_ThenNoSignalRInvoked()
         {
             // Arrange
             _chaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
@@ -88,7 +89,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task CreateTodoItem_WhenExceptionBecauseOfUniqueConstraint_ThenNoSignalRPublish()
+        public async Task CreateTodoItem_WhenExceptionBecauseOfUniqueConstraint_ThenNoSignalRInvoked()
         {
             // Arrange
             var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
@@ -102,9 +103,9 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             // Assert
             _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
         }
-
+        
         [TestMethod]
-        public async Task CompleteTodoItem_WhenNoException_ThenSignalRPublishesRemovedTodoItem()
+        public async Task CompleteTodoItem_WhenNoException_ThenSignalRInvoked()
         {
             // Arrange
             var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
@@ -121,6 +122,29 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             _signalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task CompleteTodoItem_WhenExceptionRemoveTodoCommandOccurs_ThenNoSignalRInvokedAndTodoItemNotRemoved()
+        {
+            // Arrange
+            var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            var response2 = await _webClient.GetAsync("/TodoItem");
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            var todoItem = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single();
+
+            _chaosMonkeyMock.Setup(x => x.OnNsbHandle()).Throws<Exception>();
+
+            // Act
+            var response = await _webClient.PutAsync($"/TodoItem?id={todoItem.Id}", null);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Never);
+            _web.Services.CreateScope().ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem.Id).Removed.Should().BeFalse();
         }
     }
 }
