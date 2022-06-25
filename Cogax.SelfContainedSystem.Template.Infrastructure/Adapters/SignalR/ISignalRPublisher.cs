@@ -4,10 +4,12 @@ namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 
 public interface ISignalRPublisher
 {
-    public Task PublishTodoItem(TodoItemDescription? vm);
+    public Task NewTodoItem(TodoItemDescription vm);
+    public Task RemoveTodoItemdoItem(Guid id);
 }
 
 public class NullSignalRPublisher : ISignalRPublisher
 {
-    public Task PublishTodoItem(TodoItemDescription? vm) => Task.CompletedTask;
+    public Task NewTodoItem(TodoItemDescription vm) => Task.CompletedTask;
+    public Task RemoveTodoItemdoItem(Guid id) => Task.CompletedTask;
 }

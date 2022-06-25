@@ -25,6 +25,6 @@ public class TodoItemCompletedIntegrationEventHandler : IHandleMessages<TodoItem
     public async Task Handle(TodoItemCompletedIntegrationEvent message, IMessageHandlerContext context)
     {
         await _mediator.Send(new RemoveTodoItemCommand(new TodoItemId(message.TodoItemId)));
-        _chaosMonkey.OnWorkerNsbHandle();
+        _chaosMonkey.OnNsbHandle();
     }
 }

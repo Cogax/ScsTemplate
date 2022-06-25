@@ -1,5 +1,3 @@
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

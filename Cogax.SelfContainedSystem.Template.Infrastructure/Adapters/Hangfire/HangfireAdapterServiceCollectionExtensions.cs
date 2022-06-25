@@ -1,5 +1,3 @@
-
-using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 using Hangfire;
@@ -70,6 +68,7 @@ public static class HangfireAdapterServiceCollectionExtensions
                 sp.GetRequiredService<SqlServerStorageOptions>())),
             ServiceLifetime.Scoped));
 
+        services.AddScoped<HangfireOutboxMessageSession>();
         services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.Replace(new ServiceDescriptor(typeof(IMessageSession), sp =>
@@ -77,9 +76,7 @@ public static class HangfireAdapterServiceCollectionExtensions
             if (sp.GetService<IHttpContextAccessor>()?.HttpContext == null)
                 return nsbMessageSessionImplementationFactory(sp);
 
-            return new HangfireOutboxMessageSession(
-                sp.GetRequiredService<IBackgroundJobClient>(),
-                sp.GetRequiredService<IChaosMonkey>());
+            return sp.GetRequiredService<HangfireOutboxMessageSession>();
         }, ServiceLifetime.Scoped));
 
         return services;

@@ -1,5 +1,3 @@
-using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-
 using Hangfire;
 
 using NServiceBus;
@@ -9,20 +7,16 @@ namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 public class HangfireOutboxMessageSession : IMessageSession
 {
     private readonly IBackgroundJobClient _hangfireJobClient;
-    private readonly IChaosMonkey _chaosMonkey;
 
-    public HangfireOutboxMessageSession(IBackgroundJobClient hangfireJobClient, IChaosMonkey chaosMonkey)
+    public HangfireOutboxMessageSession(IBackgroundJobClient hangfireJobClient)
     {
         _hangfireJobClient = hangfireJobClient;
-        _chaosMonkey = chaosMonkey;
     }
 
     public Task Send(object message, SendOptions options)
     {
         _hangfireJobClient.Enqueue<IMessageSession>(
             messageSession => messageSession.Send(message, options));
-
-        _chaosMonkey.OnOutboxAdded();
 
         return Task.CompletedTask;
     }
@@ -32,8 +26,6 @@ public class HangfireOutboxMessageSession : IMessageSession
         _hangfireJobClient.Enqueue<IMessageSession>(
             messageSession => messageSession.Send<T>(messageConstructor, options));
 
-        _chaosMonkey.OnOutboxAdded();
-
         return Task.CompletedTask;
     }
 
@@ -42,8 +34,6 @@ public class HangfireOutboxMessageSession : IMessageSession
         _hangfireJobClient.Enqueue<IMessageSession>(
             messageSession => messageSession.Publish(message, options));
 
-        _chaosMonkey.OnOutboxAdded();
-
         return Task.CompletedTask;
     }
 
@@ -51,8 +41,6 @@ public class HangfireOutboxMessageSession : IMessageSession
     {
         _hangfireJobClient.Enqueue<IMessageSession>(
             messageSession => messageSession.Publish<T>(messageConstructor, publishOptions));
-
-        _chaosMonkey.OnOutboxAdded();
 
         return Task.CompletedTask;
     }

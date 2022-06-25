@@ -18,6 +18,10 @@ public static class HostBuilderExtensions
             EndpointConfiguration endpointConfiguration = new(endpointName);
             endpointConfiguration.EnableInstallers(); // Damit Queues etc. beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
             endpointConfiguration.PurgeOnStartup(enablePurgeAtStartup); // Damit Queues beim Startup immer leer sind (DEV Mode)
+            endpointConfiguration // Tests
+                .Recoverability()
+                .Immediate(i => i.NumberOfRetries(0))
+                .Delayed(d => d.NumberOfRetries(0));
             if (enableNsbOutbox)
                 endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
 

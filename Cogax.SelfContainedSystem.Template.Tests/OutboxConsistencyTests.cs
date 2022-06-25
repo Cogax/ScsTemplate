@@ -6,9 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
-using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 using Cogax.SelfContainedSystem.Template.Tests.Utils;
 
@@ -71,7 +69,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
         }
 
         [TestMethod]
@@ -86,7 +84,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Never);
+            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Never);
         }
 
         [TestMethod]
@@ -102,7 +100,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
         }
 
         [TestMethod]
@@ -122,7 +120,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.PublishTodoItem(It.Is<TodoItemDescription?>(x => x == null)), Times.Once);
+            _signalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Once);
         }
     }
 }

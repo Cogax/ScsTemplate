@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Generated;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts

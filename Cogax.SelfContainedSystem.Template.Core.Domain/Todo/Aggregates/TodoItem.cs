@@ -40,7 +40,7 @@ public class TodoItem : AggregateRoot
         if (this.removed) return;
 
         this.removed = true;
-        AddDomainEvent(new TodoItemCompletedDomainEvent(Id));
+        AddDomainEvent(new TodoItemRemovedDomainEvent(Id));
     }
 
     protected override IEnumerable<object> GetIdentityComponents()
