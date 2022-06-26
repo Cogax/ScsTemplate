@@ -87,7 +87,7 @@ public static class HangfireAdapterServiceCollectionExtensions
             switch (outboxType)
             {
                 case ExecutionContextOutboxType.NServiceBusOutbox:
-                    return nsbUniformSessionImplementationFactory;
+                    return nsbUniformSessionImplementationFactory(sp);
                 case ExecutionContextOutboxType.HangfireOutbox:
                     return sp.GetRequiredService<HangfireOutboxUniformSession>();
                 default:
@@ -96,7 +96,8 @@ public static class HangfireAdapterServiceCollectionExtensions
             }
         };
 
-        services.Replace(new ServiceDescriptor(typeof(IMessageSession), messageSessionFactory, ServiceLifetime.Scoped));
+        services.Replace(new ServiceDescriptor(typeof(IMessageSession), sp =>
+            throw new Exception("Use IUniformSession instead of IMessageSession!"), ServiceLifetime.Scoped));
         services.Replace(new ServiceDescriptor(typeof(IUniformSession), messageSessionFactory, ServiceLifetime.Scoped));
         
         return services;
