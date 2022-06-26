@@ -3,23 +3,24 @@ using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
 
 using NServiceBus;
+using NServiceBus.UniformSession;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus;
 
 public class TodoMessagingAdapter : ITodoMessagingPort
 {
-    private readonly IMessageSession _messageSession;
+    private readonly IUniformSession _uniformSession;
 
-    public TodoMessagingAdapter(IMessageSession messageSession)
+    public TodoMessagingAdapter(IUniformSession uniformSession)
     {
-        _messageSession = messageSession;
+        _uniformSession = uniformSession;
     }
 
     public async Task SendIntegrationEvent(
         TodoItemAddedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _messageSession.Publish(new TodoItemAddedIntegrationEvent
+        await _uniformSession.Publish(new TodoItemAddedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
@@ -29,7 +30,7 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         TodoItemCompletedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _messageSession.Publish(new TodoItemCompletedIntegrationEvent
+        await _uniformSession.Publish(new TodoItemCompletedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
@@ -39,7 +40,7 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         TodoItemRemovedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _messageSession.Publish(new TodoItemRemovedIntegrationEvent
+        await _uniformSession.Publish(new TodoItemRemovedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });

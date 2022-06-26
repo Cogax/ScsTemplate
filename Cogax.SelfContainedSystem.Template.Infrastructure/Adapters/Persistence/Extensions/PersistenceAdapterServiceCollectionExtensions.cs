@@ -41,15 +41,15 @@ public static class PersistenceAdapterServiceCollectionExtensions
 
         services.AddScoped<WriteModelDbContext>(sp =>
         {
-            var dbContextOptions = new WriteModelDbContext(sp.GetRequiredService<DbContextOptions<WriteModelDbContext>>());
+            var dbContext = new WriteModelDbContext(sp.GetRequiredService<DbContextOptions<WriteModelDbContext>>());
             var executionContext = sp.GetRequiredService<IExecutionContext>();
             if (executionContext is NServiceBusMessageHandlerExecutionContext)
             {
                 var nsbStorageSession = sp.GetRequiredService<ISqlStorageSession>();
-                dbContextOptions.Database.UseTransaction(nsbStorageSession.Transaction);
+                dbContext.Database.UseTransaction(nsbStorageSession.Transaction);
             }
 
-            return dbContextOptions;
+            return dbContext;
         });
 
         //services.AddDbContext<WriteModelDbContext>(optionsAction => optionsAction
