@@ -1,6 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Queries;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Contracts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 
 using MediatR;

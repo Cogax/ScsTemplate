@@ -32,7 +32,7 @@ public class SqlServerPersistenceAdapter : IPersistenceAdapter
         var strategy = new WriteModelDbContext(_serviceProvider.GetRequiredService<DbContextOptions<WriteModelDbContext>>())
             .Database.CreateExecutionStrategy();
 
-        return await strategy.ExecuteInTransactionAsync(
+        return await strategy.ExecuteAsync(
             operation: async (cToken) =>
             {
                 using var transcation = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -41,7 +41,6 @@ public class SqlServerPersistenceAdapter : IPersistenceAdapter
                 transcation.Complete();
                 return result;
             },
-            verifySucceeded: _ => Task.FromResult(false),
             cancellationToken: cancellationToken);
     }
 

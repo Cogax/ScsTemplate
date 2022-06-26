@@ -1,6 +1,6 @@
 using NServiceBus;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Contracts;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
 
 public class TodoItemRemovedIntegrationEvent : IEvent
 {

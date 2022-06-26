@@ -3,7 +3,7 @@ using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 
 public static class MessagingAdapterServiceCollectionExtensions
 {

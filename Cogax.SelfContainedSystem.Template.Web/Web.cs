@@ -1,7 +1,7 @@
 using Cogax.SelfContainedSystem.Template.Core.Application;
 using Cogax.SelfContainedSystem.Template.Core.Domain;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Migrations;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Extensions;
 
@@ -15,7 +15,7 @@ public static class Web
 {
     public static WebApplication BuildWeb(this WebApplicationBuilder builder)
     {
-        Migrator.Migrate();
+        //Migrator.Migrate();
 
         builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
         builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Web", enableSendOnly: true, enablePurgeAtStartup: true);

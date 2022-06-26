@@ -1,6 +1,8 @@
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 using Hangfire;
+using Hangfire.Client;
 using Hangfire.SqlServer;
 
 using Microsoft.AspNetCore.Http;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NServiceBus;
+using NServiceBus.UniformSession;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 
@@ -31,8 +34,9 @@ public static class HangfireAdapterServiceCollectionExtensions
         };
 
         services.AddSingleton(sqlServerStorageOptions);
-
-        services.AddHangfire(options => options
+        
+        services.AddHangfire((sp, options) => options
+            .UseActivator(new HangfireJobActivator(sp.GetRequiredService<IServiceScopeFactory>()))
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
@@ -54,13 +58,18 @@ public static class HangfireAdapterServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-
         var nsbMessageSessionImplementationFactory = services
             .FirstOrDefault(d => d.ServiceType == typeof(IMessageSession))?
             .ImplementationFactory;
 
-        if (nsbMessageSessionImplementationFactory == null)
-            throw new Exception("Hangfire Outbox must be registered after NServiceBus!");
+        var nsbUniformSessionImplementationFactory = services
+            .FirstOrDefault(d => d.ServiceType == typeof(IUniformSession))?
+            .ImplementationFactory;
+
+        if (nsbMessageSessionImplementationFactory == null ||
+            nsbUniformSessionImplementationFactory == null)
+            throw new Exception("Hangfire Outbox needs to be registered after NServiceBus and EnableUniformSession() needs" +
+                                "to be configured on the EndpointConfiguration (requires NServiceBus.UniformSession package)!");
 
         services.Replace(new ServiceDescriptor(typeof(IBackgroundJobClient), sp =>
             new BackgroundJobClient(new SqlServerStorage(
@@ -68,17 +77,28 @@ public static class HangfireAdapterServiceCollectionExtensions
                 sp.GetRequiredService<SqlServerStorageOptions>())),
             ServiceLifetime.Scoped));
 
-        services.AddScoped<HangfireOutboxMessageSession>();
-        services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<HangfireOutboxUniformSession>();
 
-        services.Replace(new ServiceDescriptor(typeof(IMessageSession), sp =>
+        Func<IServiceProvider, object> messageSessionFactory = (sp) =>
         {
-            if (sp.GetService<IHttpContextAccessor>()?.HttpContext == null)
-                return nsbMessageSessionImplementationFactory(sp);
+            var executionContext = sp.GetRequiredService<IExecutionContext>();
+            var outboxType = executionContext.GetExecutionContextOutboxType();
 
-            return sp.GetRequiredService<HangfireOutboxMessageSession>();
-        }, ServiceLifetime.Scoped));
+            switch (outboxType)
+            {
+                case ExecutionContextOutboxType.NServiceBusOutbox:
+                    return nsbUniformSessionImplementationFactory;
+                case ExecutionContextOutboxType.HangfireOutbox:
+                    return sp.GetRequiredService<HangfireOutboxUniformSession>();
+                default:
+                    throw new NotImplementedException(
+                        $"{nameof(ExecutionContextOutboxType)} '{outboxType}' not implemented!");
+            }
+        };
 
+        services.Replace(new ServiceDescriptor(typeof(IMessageSession), messageSessionFactory, ServiceLifetime.Scoped));
+        services.Replace(new ServiceDescriptor(typeof(IUniformSession), messageSessionFactory, ServiceLifetime.Scoped));
+        
         return services;
     }
 }

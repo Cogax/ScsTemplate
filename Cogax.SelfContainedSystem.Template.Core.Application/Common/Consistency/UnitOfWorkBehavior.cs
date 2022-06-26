@@ -9,15 +9,21 @@ namespace Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency
 public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly IUnitOfWork unitOfWork;
-    private readonly ILogger<UnitOfWorkBehavior<TRequest, TResponse>> logger;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDomainEventsDispatcher _domainEventsDispatcher;
+    private readonly IChaosMonkey _chaosMonkey;
+    private readonly ILogger<UnitOfWorkBehavior<TRequest, TResponse>> _logger;
 
     public UnitOfWorkBehavior(
         IUnitOfWork unitOfWork,
+        IDomainEventsDispatcher domainEventsDispatcher,
+        IChaosMonkey chaosMonkey,
         ILogger<UnitOfWorkBehavior<TRequest, TResponse>> logger)
     {
-        this.unitOfWork = unitOfWork;
-        this.logger = logger;
+        this._unitOfWork = unitOfWork;
+        _domainEventsDispatcher = domainEventsDispatcher;
+        _chaosMonkey = chaosMonkey;
+        this._logger = logger;
     }
 
     public async Task<TResponse> Handle(
@@ -28,10 +34,17 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         if (request is ICommand ||
             (request.GetType().IsGenericType && request.GetType().GetGenericTypeDefinition() == typeof(ICommand<>)))
         {
-            logger.LogDebug($"CommandUnitOfWorkBehavior: Before handle request. UnitOfWork: {unitOfWork.GetHashCode()}");
+            _logger.LogDebug($"CommandUnitOfWorkBehavior: Before handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
 
-            var response = await unitOfWork.ExecuteOperation(async (cToken) => await next(), cancellationToken);
-            logger.LogDebug($"CommandUnitOfWorkBehavior: After handle request. UnitOfWork: {unitOfWork.GetHashCode()}");
+            var response = await _unitOfWork.ExecuteOperation(async (cToken) =>
+            {
+                var result = await next();
+                await _domainEventsDispatcher.DispatchEventsAsync(cToken);
+                _chaosMonkey.OnUowCommit();
+                return result;
+            }, cancellationToken);
+
+            _logger.LogDebug($"CommandUnitOfWorkBehavior: After handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
 
             return response;
         }

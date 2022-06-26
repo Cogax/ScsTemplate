@@ -1,15 +1,11 @@
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
-
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
-using NServiceBus.Persistence.Sql;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Extensions;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 
-public static class HostBuilderExtensions
+public static class NServiceBusHostBuilderExtensions
 {
     public static IHostBuilder AddMessaging(this IHostBuilder hostBuilder,
         string endpointName,
@@ -26,6 +22,7 @@ public static class HostBuilderExtensions
                 .Immediate(i => i.NumberOfRetries(0))
                 .Delayed(d => d.NumberOfRetries(0));
             endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
+            endpointConfiguration.EnableUniformSession();
 
             // Persistence
             // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie
@@ -42,18 +39,8 @@ public static class HostBuilderExtensions
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
 
-            // Unit of Work
-            endpointConfiguration.RegisterComponents(c =>
-            {
-                c.ConfigureComponent(b =>
-                {
-                    var session = b.Build<ISqlStorageSession>();
-                    var context = b.Build<WriteModelDbContext>();
-                    context.Database.UseTransaction(session.Transaction);
-                    session.OnSaveChanges(s => context.SaveChangesAsync());
-                    return context;
-                }, DependencyLifecycle.InstancePerUnitOfWork);
-            });
+            //var nsbUnitOfWork = endpointConfiguration.UnitOfWork();
+            //nsbUnitOfWork.WrapHandlersInATransactionScope();
 
             // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
             // aber keine Abonnieren, Handeln oder Subscriben.

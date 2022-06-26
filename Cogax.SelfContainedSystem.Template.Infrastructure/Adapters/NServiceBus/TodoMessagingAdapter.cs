@@ -1,10 +1,10 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
-using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging.Contracts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
 
 using NServiceBus;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Messaging;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus;
 
 public class TodoMessagingAdapter : ITodoMessagingPort
 {
