@@ -1,6 +1,5 @@
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire.Recurring;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 using Hangfire;
 using Hangfire.SqlServer;
@@ -10,9 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using NServiceBus;
-using NServiceBus.UniformSession;
-
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 
 public static class HangfireAdapterServiceCollectionExtensions
@@ -21,7 +17,7 @@ public static class HangfireAdapterServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var sqlServerStorageOptions = new SqlServerStorageOptions
+        services.AddSingleton(new SqlServerStorageOptions
         {
             CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
             SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
@@ -30,18 +26,21 @@ public static class HangfireAdapterServiceCollectionExtensions
             DisableGlobalLocks = true,
             DashboardJobListLimit = 5000,
             JobExpirationCheckInterval = TimeSpan.FromMinutes(30),
-        };
-
-        services.AddSingleton(sqlServerStorageOptions);
+        });
         
         services.AddHangfire((sp, options) => options
-            .UseActivator(new HangfireJobActivator(sp.GetRequiredService<IServiceScopeFactory>()))
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
-            .UseSqlServerStorage(configuration["ConnectionStrings:Db"], sqlServerStorageOptions));
+            .UseSqlServerStorage(configuration["ConnectionStrings:Db"], sp.GetRequiredService<SqlServerStorageOptions>()));
 
         services.AddHostedService<RecurringJobInitializationBackgroundService>();
+
+        services.Replace(new ServiceDescriptor(typeof(IBackgroundJobClient), sp =>
+                new BackgroundJobClient(new SqlServerStorage(
+                    sp.GetRequiredService<WriteModelDbContext>().Database.GetDbConnection(),
+                    sp.GetRequiredService<SqlServerStorageOptions>())),
+            ServiceLifetime.Scoped));
 
         return services;
     }
@@ -52,55 +51,6 @@ public static class HangfireAdapterServiceCollectionExtensions
     {
         services.AddHangfireServer();
 
-        return services;
-    }
-
-    public static IServiceCollection AddHangfireOutboxAdapter(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        var nsbMessageSessionImplementationFactory = services
-            .FirstOrDefault(d => d.ServiceType == typeof(IMessageSession))?
-            .ImplementationFactory;
-
-        var nsbUniformSessionImplementationFactory = services
-            .FirstOrDefault(d => d.ServiceType == typeof(IUniformSession))?
-            .ImplementationFactory;
-
-        if (nsbMessageSessionImplementationFactory == null ||
-            nsbUniformSessionImplementationFactory == null)
-            throw new Exception("Hangfire Outbox needs to be registered after NServiceBus and EnableUniformSession() needs" +
-                                "to be configured on the EndpointConfiguration (requires NServiceBus.UniformSession package)!");
-
-        services.Replace(new ServiceDescriptor(typeof(IBackgroundJobClient), sp =>
-            new BackgroundJobClient(new SqlServerStorage(
-                sp.GetRequiredService<WriteModelDbContext>().Database.GetDbConnection(),
-                sp.GetRequiredService<SqlServerStorageOptions>())),
-            ServiceLifetime.Scoped));
-
-        services.AddScoped<HangfireOutboxUniformSession>();
-
-        Func<IServiceProvider, object> messageSessionFactory = (sp) =>
-        {
-            var executionContext = sp.GetRequiredService<IExecutionContext>();
-            var outboxType = executionContext.GetExecutionContextOutboxType();
-
-            switch (outboxType)
-            {
-                case ExecutionContextOutboxType.NServiceBusOutbox:
-                    return nsbUniformSessionImplementationFactory(sp);
-                case ExecutionContextOutboxType.HangfireOutbox:
-                    return sp.GetRequiredService<HangfireOutboxUniformSession>();
-                default:
-                    throw new NotImplementedException(
-                        $"{nameof(ExecutionContextOutboxType)} '{outboxType}' not implemented!");
-            }
-        };
-
-        services.Replace(new ServiceDescriptor(typeof(IMessageSession), sp =>
-            throw new Exception("Use IUniformSession instead of IMessageSession!"), ServiceLifetime.Scoped));
-        services.Replace(new ServiceDescriptor(typeof(IUniformSession), messageSessionFactory, ServiceLifetime.Scoped));
-        
         return services;
     }
 }

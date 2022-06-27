@@ -1,25 +1,24 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
-
-using NServiceBus.UniformSession;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus;
 
 public class TodoMessagingAdapter : ITodoMessagingPort
 {
-    private readonly IUniformSession _uniformSession;
+    private readonly IOutbox _outbox;
 
-    public TodoMessagingAdapter(IUniformSession uniformSession)
+    public TodoMessagingAdapter(IOutbox outbox)
     {
-        _uniformSession = uniformSession;
+        _outbox = outbox;
     }
 
     public async Task SendIntegrationEvent(
         TodoItemAddedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _uniformSession.Publish(new TodoItemAddedIntegrationEvent
+        await _outbox.Publish(new TodoItemAddedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
@@ -29,7 +28,7 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         TodoItemCompletedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _uniformSession.Publish(new TodoItemCompletedIntegrationEvent
+        await _outbox.Publish(new TodoItemCompletedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
@@ -39,7 +38,7 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         TodoItemRemovedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _uniformSession.Publish(new TodoItemRemovedIntegrationEvent
+        await _outbox.Publish(new TodoItemRemovedIntegrationEvent
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
@@ -49,6 +48,6 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         TodoItemsDeletedDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
     {
-        await _uniformSession.Publish(new TodoItemsDeletedIntegrationEvent());
+        await _outbox.Publish(new TodoItemsDeletedIntegrationEvent());
     }
 }

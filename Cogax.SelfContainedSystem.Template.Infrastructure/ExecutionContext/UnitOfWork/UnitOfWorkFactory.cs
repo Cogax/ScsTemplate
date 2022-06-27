@@ -1,7 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.UnitOfWork;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.UnitOfWork;
 
 public class UnitOfWorkFactory : IUnitOfWorkFactory
 {

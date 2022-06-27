@@ -43,4 +43,8 @@
     <ProjectReference Include="..\Cogax.SelfContainedSystem.Template.Core.Application\Cogax.SelfContainedSystem.Template.Core.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ExecutionContext\Outbox\" />
+  </ItemGroup>
+
 </Project>

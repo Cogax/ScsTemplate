@@ -19,7 +19,6 @@ public static class Worker
         builder.Services.AddSwaggerGen();
         builder.Services.AddMediatR(typeof(Worker));
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.Services.AddHangfireOutboxAdapter(builder.Configuration);
         builder.Services.AddHangfireServerAdapter(builder.Configuration);
         builder.Services.AddCoreApplication();
         builder.Services.AddCoreDomain();

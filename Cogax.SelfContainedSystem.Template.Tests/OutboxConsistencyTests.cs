@@ -267,7 +267,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = _web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(0);
 
-            await AssertHangfireJobs(total: 3, succeeded: 3);
+            await AssertHangfireJobs(total: 4, succeeded: 4);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
             await AssertRabbitMqQueueLength(ErrorQueue, 0);

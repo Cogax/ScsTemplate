@@ -24,7 +24,6 @@ public static class Web
         builder.Services.AddSwaggerGen();
         builder.Services.AddMediatR(typeof(Web));
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.Services.AddHangfireOutboxAdapter(builder.Configuration);
         builder.Services.AddCoreApplication();
         builder.Services.AddCoreDomain();
         

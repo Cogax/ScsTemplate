@@ -1,5 +1,6 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-using Cogax.SelfContainedSystem.Template.Infrastructure.UnitOfWork;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.UnitOfWork;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,9 +15,9 @@ public class NServiceBusMessageHandlerExecutionContext : IExecutionContext
         _serviceProvider = serviceProvider;
     }
 
-    public ExecutionContextOutboxType GetExecutionContextOutboxType()
-        => ExecutionContextOutboxType.NServiceBusOutbox;
-
     public IUnitOfWork CreateUnitOfWork() =>
         _serviceProvider.GetRequiredService<DefaultUnitOfWork>();
+
+    public IOutbox CreateOutbox() =>
+        _serviceProvider.GetRequiredService<NServiceBusOutbox>();
 }
