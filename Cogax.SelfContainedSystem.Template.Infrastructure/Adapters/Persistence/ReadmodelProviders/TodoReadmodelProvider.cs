@@ -16,10 +16,10 @@ public class TodoReadmodelProvider : ITodoReadModelProvider
         _readModelDb = readModelDb;
     }
 
-    public async Task<TodoItemDescription> GetTodoItemDescription(TodoItemId id, CancellationToken cancellationToken)
+    public async Task<TodoItemDescription?> GetTodoItemDescription(TodoItemId id, CancellationToken cancellationToken)
     {
-        var todoItem = await _readModelDb.TodoItems.SingleAsync(i => i.Id == id.Value, cancellationToken);
-        return new TodoItemDescription(todoItem.Id, todoItem.Label, todoItem.Completed);
+        var todoItem = await _readModelDb.TodoItems.FirstOrDefaultAsync(i => i.Id == id.Value, cancellationToken);
+        return todoItem == null ? null : new TodoItemDescription(todoItem.Id, todoItem.Label, todoItem.Completed);
     }
 
     public async Task<IEnumerable<TodoItemDescription>> GetAllTodoItemDescriptions(CancellationToken cancellationToken)

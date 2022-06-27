@@ -18,5 +18,5 @@ public class DefaultExecutionContext : IExecutionContext
         ExecutionContextOutboxType.HangfireOutbox;
 
     public IUnitOfWork CreateUnitOfWork() =>
-        _serviceProvider.GetRequiredService<DefaultUnitOfWork>();
+        _serviceProvider.GetRequiredService<TransactionScopeUnitOfWork>();
 }

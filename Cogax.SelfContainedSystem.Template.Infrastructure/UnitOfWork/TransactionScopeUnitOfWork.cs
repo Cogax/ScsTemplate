@@ -1,7 +1,6 @@
 using System.Transactions;
 
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-using Cogax.SelfContainedSystem.Template.Core.Application.Common.Ports;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 
 using Microsoft.EntityFrameworkCore;

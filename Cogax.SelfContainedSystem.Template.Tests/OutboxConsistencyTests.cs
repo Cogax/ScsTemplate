@@ -13,8 +13,12 @@ using Cogax.SelfContainedSystem.Template.Tests.Utils;
 using Cogax.SelfContainedSystem.Template.Web;
 using Cogax.SelfContainedSystem.Template.Worker;
 
+using EasyNetQ.Management.Client;
+using EasyNetQ.Management.Client.Model;
+
 using FluentAssertions;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,11 +29,15 @@ namespace Cogax.SelfContainedSystem.Template.Tests
     [TestClass]
     public class OutboxConsistencyTests
     {
+        private const string WebQueue = "Cogax.SelfContainedSystem.Template.Web";
+        private const string WorkerQueue = "Cogax.SelfContainedSystem.Template.Worker";
+        private const string ErrorQueue = "error";
         private static TimeSpan WaitDuration = TimeSpan.FromSeconds(5);
         private TestableWebApplication<WebProgram> _web = null!;
         private TestableWebApplication<WorkerProgram> _worker = null!;
         private HttpClient _webClient = null!;
         private HttpClient _workerClient = null!;
+        private IManagementClient _rabbitMqClient = null!;
 
         private Mock<ISignalRPublisher> _signalRPublisherMock = null!;
         private Mock<IChaosMonkey> _chaosMonkeyMock = null!;
@@ -55,12 +63,17 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             _webClient = _web.CreateClient();
             _workerClient = _worker.CreateClient();
 
-            await _webClient.DeleteAsync("/TodoItem");
+            _rabbitMqClient = new ManagementClient("http://localhost", "guest", "guest", portNumber: 15672);
+
+            await PurgeDb();
+            await PurgeRabbitMq();
         }
 
         [TestCleanup]
         public async Task TearDown()
         {
+            _rabbitMqClient.Dispose();
+
             _webClient.Dispose();
             _web.Server.Dispose();
             await _web.DisposeAsync();
@@ -79,7 +92,12 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(WaitDuration);
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.Is<TodoItemDescription>(d => d.Label == "test")), Times.Once);
+
+            await AssertHangfireJobs(total: 1, succeeded: 1);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
         }
 
         [TestMethod]
@@ -94,7 +112,12 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(WaitDuration);
 
             // Assert
-            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Never);
+            _signalRPublisherMock.Verify(x => x.NewTodoItem(It.Is<TodoItemDescription?>(d => d == null)), Times.Never);
+
+            await AssertHangfireJobs(total: 0, succeeded: 0);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
         }
 
         [TestMethod]
@@ -111,6 +134,11 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             _signalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+
+            await AssertHangfireJobs(total: 1, succeeded: 1);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
         }
         
         [TestMethod]
@@ -131,6 +159,11 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             _signalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Once);
+
+            await AssertHangfireJobs(total: 2, succeeded: 2);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
         }
 
         [TestMethod]
@@ -155,6 +188,11 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             _signalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Never);
             using var scope = _web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem.Id).Removed.Should().BeFalse();
+
+            await AssertHangfireJobs(total: 2, succeeded: 2);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 1);
         }
 
         [TestMethod]
@@ -190,6 +228,53 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = _web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem1.Id).Removed.Should().BeTrue();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem2.Id).Removed.Should().BeFalse();
+
+            await AssertHangfireJobs(total: 4, succeeded: 4);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 1);
+        }
+
+        private async Task PurgeRabbitMq()
+        {
+            await PurgeRabbitMqQueue(WorkerQueue);
+            await PurgeRabbitMqQueue(WebQueue);
+            await PurgeRabbitMqQueue(ErrorQueue);
+        }
+
+        private async Task PurgeRabbitMqQueue(string queueName)
+        {
+            var vhost = await _rabbitMqClient.GetVhostAsync("/");
+            var queue = await _rabbitMqClient.GetQueueAsync(queueName, vhost);
+            await _rabbitMqClient.PurgeAsync(queue);
+        }
+
+        private async Task PurgeDb()
+        {
+            using var scope = _web.Services.CreateScope();
+            var db = scope.ServiceProvider.GetService<ReadModelDbContext>();
+            db.TodoItems.RemoveRange(await db.TodoItems.ToListAsync());
+            db.Job.RemoveRange(await db.Job.ToListAsync());
+            await db.SaveChangesAsync();
+            scope.Dispose();
+        }
+
+        private async Task AssertRabbitMqQueueLength(string queueName, int count)
+        {
+            var vhost = await _rabbitMqClient.GetVhostAsync("/");
+            var queue = await _rabbitMqClient.GetQueueAsync(queueName, vhost);
+            var messages = await _rabbitMqClient.GetMessagesFromQueueAsync(queue, new GetMessagesCriteria(100, Ackmodes.ack_requeue_true));
+
+            messages.Should().HaveCount(count, "Found messages in queue '{0}': {1}", queueName, JsonSerializer.Serialize(messages));
+        }
+
+        private async Task AssertHangfireJobs(int total, int succeeded)
+        {
+            using var scope = _web.Services.CreateScope();
+            var jobs = await scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().Job.ToListAsync();
+            jobs.Should().HaveCount(total);
+            jobs.Where(j => j.StateName == "Succeeded").Should().HaveCount(succeeded);
+            scope.Dispose();
         }
     }
 }

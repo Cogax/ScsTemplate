@@ -5,9 +5,9 @@ using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
 
 namespace Cogax.SelfContainedSystem.Template.Core.Application.Todo.Queries;
 
-public record GetTodoItemDescriptionQuery(TodoItemId Id) : IQuery<TodoItemDescription>;
+public record GetTodoItemDescriptionQuery(TodoItemId TodoItemId) : IQuery<TodoItemDescription?>;
 
-internal class GetTodoItemDescriptionQueryHandler : IQueryHandler<GetTodoItemDescriptionQuery, TodoItemDescription>
+internal class GetTodoItemDescriptionQueryHandler : IQueryHandler<GetTodoItemDescriptionQuery, TodoItemDescription?>
 {
     private readonly ITodoReadModelProvider _readModelProvider;
 
@@ -16,8 +16,8 @@ internal class GetTodoItemDescriptionQueryHandler : IQueryHandler<GetTodoItemDes
         _readModelProvider = readModelProvider;
     }
 
-    public async Task<TodoItemDescription> Handle(GetTodoItemDescriptionQuery request, CancellationToken cancellationToken)
+    public async Task<TodoItemDescription?> Handle(GetTodoItemDescriptionQuery query, CancellationToken cancellationToken)
     {
-        return await _readModelProvider.GetTodoItemDescription(request.Id, cancellationToken);
+        return await _readModelProvider.GetTodoItemDescription(query.TodoItemId, cancellationToken);
     }
 }

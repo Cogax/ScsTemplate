@@ -33,6 +33,12 @@ public class TodoItemRepository : ITodoItemRepository
         return todoItem;
     }
 
+    public async Task<IEnumerable<TodoItem>> GetAll(CancellationToken cancellationToken = default)
+    {
+        var dbConntection = _writeDb.Database.GetDbConnection();
+        return await _writeDb.TodoItems.ToListAsync(cancellationToken);
+    }
+
     public async Task ClearAll(CancellationToken cancellationToken = default)
     {
         _writeDb.TodoItems.RemoveRange(await _writeDb.TodoItems.ToListAsync(cancellationToken));
