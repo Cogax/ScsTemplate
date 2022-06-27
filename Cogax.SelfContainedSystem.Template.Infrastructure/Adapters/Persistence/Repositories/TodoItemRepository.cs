@@ -1,3 +1,5 @@
+using System.Data;
+
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Exceptions;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Ports;
@@ -33,14 +35,17 @@ public class TodoItemRepository : ITodoItemRepository
         return todoItem;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAll(CancellationToken cancellationToken = default)
-    {
-        var dbConntection = _writeDb.Database.GetDbConnection();
-        return await _writeDb.TodoItems.ToListAsync(cancellationToken);
-    }
-
     public async Task ClearAll(CancellationToken cancellationToken = default)
     {
         _writeDb.TodoItems.RemoveRange(await _writeDb.TodoItems.ToListAsync(cancellationToken));
+    }
+
+    public async Task VerifyConnectionOpen(CancellationToken cancellationToken = default)
+    {
+        var canConnect = await _writeDb.Database.CanConnectAsync(cancellationToken);
+        var connection = _writeDb.Database.GetDbConnection();
+
+        if (!canConnect || connection.State != ConnectionState.Open)
+            throw new Exception("Connection Closed!");
     }
 }

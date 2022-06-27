@@ -5,7 +5,7 @@ using NServiceBus.UniformSession;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 
-public class HangfireOutboxUniformSession : IUniformSession, IMessageSession
+public class HangfireOutboxUniformSession : IUniformSession
 {
     public const string JobParameterName = "ProcessHangfireOutbox"; // Changing this may requires DB Migration
     public const string JobParameterValue = "ProcessHangfireOutbox"; // Changing this may requires DB Migration

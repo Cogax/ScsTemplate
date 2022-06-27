@@ -19,6 +19,6 @@ public class TodoItemAddedDomainEventHandler : IDomainEventHandler<TodoItemAdded
     public async Task Handle(TodoItemAddedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         await _messagingPort.SendIntegrationEvent(domainEvent, cancellationToken);
-        await _repository.GetAll(cancellationToken); // Check if Connection is still available after Hangfire Job Enqueue
+        await _repository.VerifyConnectionOpen(cancellationToken); // Check if Connection is still available after Hangfire Job Enqueue
     }
 }

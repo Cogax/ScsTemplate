@@ -2,10 +2,8 @@ using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbC
 using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 using Hangfire;
-using Hangfire.Client;
 using Hangfire.SqlServer;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

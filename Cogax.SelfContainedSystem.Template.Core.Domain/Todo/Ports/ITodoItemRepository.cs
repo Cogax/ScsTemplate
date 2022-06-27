@@ -7,6 +7,8 @@ public interface ITodoItemRepository
 {
     Task Add(TodoItem todoItem, CancellationToken cancellationToken = default);
     Task<TodoItem> GetById(TodoItemId id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<TodoItem>> GetAll(CancellationToken cancellationToken = default);
     Task ClearAll(CancellationToken cancellationToken = default);
+
+    // Only for testing purposes
+    Task VerifyConnectionOpen(CancellationToken cancellationToken = default);
 }
