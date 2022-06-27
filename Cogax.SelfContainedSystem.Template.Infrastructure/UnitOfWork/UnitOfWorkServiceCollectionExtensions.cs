@@ -10,8 +10,8 @@ public static class UnitOfWorkServiceCollectionExtensions
     public static IServiceCollection AddUnitOfWork(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<TransactionScopeUnitOfWork>();
-        services.AddScoped<NServiceBusUnitOfWork>();
-        services.AddScoped<NServiceBusUnitOfWork>();
+        services.AddScoped<DefaultUnitOfWork>();
+        services.AddScoped<DefaultUnitOfWork>();
         services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
         return services;

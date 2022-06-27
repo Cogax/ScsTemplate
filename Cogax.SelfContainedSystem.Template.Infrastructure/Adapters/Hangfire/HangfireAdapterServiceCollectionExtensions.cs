@@ -1,3 +1,4 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire.Recurring;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
@@ -39,6 +40,8 @@ public static class HangfireAdapterServiceCollectionExtensions
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseSqlServerStorage(configuration["ConnectionStrings:Db"], sqlServerStorageOptions));
+
+        services.AddHostedService<RecurringJobInitializationBackgroundService>();
 
         return services;
     }

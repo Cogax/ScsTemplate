@@ -11,7 +11,8 @@ namespace Cogax.SelfContainedSystem.Template.Web.Handlers;
 
 public class SignalRTodoItemIntegrationEventHandler :
     IHandleMessages<TodoItemAddedIntegrationEvent>,
-    IHandleMessages<TodoItemRemovedIntegrationEvent>
+    IHandleMessages<TodoItemRemovedIntegrationEvent>,
+    IHandleMessages<TodoItemsDeletedIntegrationEvent>
 {
     private readonly IMediator _mediator;
     private readonly ISignalRPublisher _signalRPublisher;
@@ -33,5 +34,10 @@ public class SignalRTodoItemIntegrationEventHandler :
     public async Task Handle(TodoItemRemovedIntegrationEvent message, IMessageHandlerContext context)
     {
         await _signalRPublisher.RemoveTodoItemdoItem(message.TodoItemId);
+    }
+
+    public async Task Handle(TodoItemsDeletedIntegrationEvent message, IMessageHandlerContext context)
+    {
+        await _signalRPublisher.TodoItemsDeleted();
     }
 }

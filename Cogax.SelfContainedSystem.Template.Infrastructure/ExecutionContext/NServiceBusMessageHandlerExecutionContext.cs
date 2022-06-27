@@ -18,5 +18,5 @@ public class NServiceBusMessageHandlerExecutionContext : IExecutionContext
         => ExecutionContextOutboxType.NServiceBusOutbox;
 
     public IUnitOfWork CreateUnitOfWork() =>
-        _serviceProvider.GetRequiredService<NServiceBusUnitOfWork>();
+        _serviceProvider.GetRequiredService<DefaultUnitOfWork>();
 }

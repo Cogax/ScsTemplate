@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
+using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Commands;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Readmodels;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
@@ -13,10 +14,16 @@ using Cogax.SelfContainedSystem.Template.Tests.Utils;
 using Cogax.SelfContainedSystem.Template.Web;
 using Cogax.SelfContainedSystem.Template.Worker;
 
+using Dapper;
+
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
 
 using FluentAssertions;
+
+using Hangfire;
+
+using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,14 +66,14 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             _web.ConfigureServices(servicesOverride);
             _worker.ConfigureServices(servicesOverride);
-
-            _webClient = _web.CreateClient();
-            _workerClient = _worker.CreateClient();
-
+            
             _rabbitMqClient = new ManagementClient("http://localhost", "guest", "guest", portNumber: 15672);
 
             await PurgeDb();
             await PurgeRabbitMq();
+
+            _webClient = _web.CreateClient();
+            _workerClient = _worker.CreateClient();
         }
 
         [TestCleanup]
@@ -235,6 +242,70 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await AssertRabbitMqQueueLength(ErrorQueue, 1);
         }
 
+        [TestMethod]
+        public async Task DeleteRemovedTodoItems_WhenNoException_ThenSignalRInvoked()
+        {
+            // Arrange
+            var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            var response2 = await _webClient.GetAsync("/TodoItem");
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            var todoItem1 = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single();
+
+            var response3 = await _webClient.PutAsync($"/TodoItem?id={todoItem1.Id}", null);
+            response3.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(WaitDuration);
+
+            // Act
+            using var actScope = _worker.Services.CreateScope();
+            actScope.ServiceProvider.GetRequiredService<IRecurringJobManager>().Trigger(nameof(DeleteRemovedTodoItemsCommand));
+            await Task.Delay(WaitDuration);
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.TodoItemsDeleted(), Times.Once);
+            using var scope = _web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(0);
+
+            await AssertHangfireJobs(total: 3, succeeded: 3);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
+        }
+
+        [TestMethod]
+        public async Task DeleteRemovedTodoItems_WhenException_ThenNoSignalRInvoked()
+        {
+            // Arrange
+            var response1 = await _webClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            var response2 = await _webClient.GetAsync("/TodoItem");
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            var todoItem1 = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single();
+
+            var response3 = await _webClient.PutAsync($"/TodoItem?id={todoItem1.Id}", null);
+            response3.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(WaitDuration);
+
+            _chaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
+
+            // Act
+            using var actScope = _worker.Services.CreateScope();
+            actScope.ServiceProvider.GetRequiredService<IRecurringJobManager>().Trigger(nameof(DeleteRemovedTodoItemsCommand));
+            await Task.Delay(WaitDuration);
+
+            // Assert
+            _signalRPublisherMock.Verify(x => x.TodoItemsDeleted(), Times.Never);
+            using var scope = _web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
+
+            await AssertHangfireJobs(total: 3, succeeded: 2);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
+        }
+
         private async Task PurgeRabbitMq()
         {
             await PurgeRabbitMqQueue(WorkerQueue);
@@ -253,9 +324,20 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         {
             using var scope = _web.Services.CreateScope();
             var db = scope.ServiceProvider.GetService<ReadModelDbContext>();
-            db.TodoItems.RemoveRange(await db.TodoItems.ToListAsync());
-            db.Job.RemoveRange(await db.Job.ToListAsync());
-            await db.SaveChangesAsync();
+
+            await db.Database.ExecuteSqlRawAsync(@"
+TRUNCATE TABLE [dbo].[NSB_OutboxData]
+TRUNCATE TABLE [dbo].[TodoItems]
+TRUNCATE TABLE [HangFire].[AggregatedCounter]
+TRUNCATE TABLE [HangFire].[Counter]
+TRUNCATE TABLE [HangFire].[JobParameter]
+TRUNCATE TABLE [HangFire].[JobQueue]
+TRUNCATE TABLE [HangFire].[List]
+TRUNCATE TABLE [HangFire].[State]
+DELETE FROM [HangFire].[Job]
+DBCC CHECKIDENT ('[HangFire].[Job]', reseed, 0)
+UPDATE [HangFire].[Hash] SET Value = 1 WHERE Field = 'LastJobId'");
+            
             scope.Dispose();
         }
 

@@ -6,14 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.UnitOfWork;
 
-// Im Fall von NSB wird bei der WriteModelDbContext registrierung
-// der DbContext bereits mit der NSB Storage Session aufgesetzt.
-public class NServiceBusUnitOfWork : IUnitOfWork
+public class DefaultUnitOfWork : IUnitOfWork
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly WriteModelDbContext _dbContext;
 
-    public NServiceBusUnitOfWork(IServiceProvider serviceProvider, WriteModelDbContext dbContext)
+    public DefaultUnitOfWork(IServiceProvider serviceProvider, WriteModelDbContext dbContext)
     {
         _serviceProvider = serviceProvider;
         _dbContext = dbContext;
@@ -21,8 +19,6 @@ public class NServiceBusUnitOfWork : IUnitOfWork
 
     public async Task<T> ExecuteOperation<T>(Func<CancellationToken, Task<T>> operation, CancellationToken cancellationToken)
     {
-        // Hangfire only supports AmbientTransactions (via TransactionScope)
-        // Create an Execution Strategy via a separate DbContext in order to support "Ambient Transactions".
         var strategy = new WriteModelDbContext(_serviceProvider.GetRequiredService<DbContextOptions<WriteModelDbContext>>())
             .Database.CreateExecutionStrategy();
 

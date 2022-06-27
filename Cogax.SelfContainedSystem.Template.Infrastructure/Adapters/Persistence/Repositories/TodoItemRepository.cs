@@ -5,6 +5,7 @@ using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Aggregates;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +14,12 @@ namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence
 public class TodoItemRepository : ITodoItemRepository
 {
     private readonly WriteModelDbContext _writeDb;
+    private readonly IExecutionContext _executionContext;
 
-    public TodoItemRepository(WriteModelDbContext writeDb)
+    public TodoItemRepository(WriteModelDbContext writeDb, IExecutionContext executionContext)
     {
         _writeDb = writeDb;
+        _executionContext = executionContext;
     }
 
     public async Task Add(TodoItem todoItem, CancellationToken cancellationToken = default)
@@ -37,6 +40,7 @@ public class TodoItemRepository : ITodoItemRepository
 
     public async Task ClearAll(CancellationToken cancellationToken = default)
     {
+        var x = _executionContext;
         _writeDb.TodoItems.RemoveRange(await _writeDb.TodoItems.ToListAsync(cancellationToken));
     }
 

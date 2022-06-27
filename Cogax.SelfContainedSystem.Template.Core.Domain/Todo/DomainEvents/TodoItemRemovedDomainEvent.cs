@@ -3,11 +3,11 @@ using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.ValueObjects;
 
 namespace Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
 
-public class TodoItemCompletedDomainEvent : DomainEvent
+public class TodoItemRemovedDomainEvent : DomainEvent
 {
     public TodoItemId TodoItemId { get; }
 
-    public TodoItemCompletedDomainEvent(TodoItemId id)
+    public TodoItemRemovedDomainEvent(TodoItemId id)
     {
         TodoItemId = id;
     }

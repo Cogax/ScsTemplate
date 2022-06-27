@@ -22,7 +22,7 @@ public class ExecutionContextFactory
         if (hangfireContext?.Items.TryGetValue(HangfireOutboxUniformSession.JobParameterName, out var value) == true &&
             (string)value == HangfireOutboxUniformSession.JobParameterValue)
         {
-            return _serviceProvider.GetRequiredService<HangfireOutboxJobExecutionContext>();
+            return _serviceProvider.GetRequiredService<DefaultExecutionContext>();
         }
 
         if (hangfireContext != null)

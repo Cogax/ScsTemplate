@@ -2,7 +2,6 @@ using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
 
-using NServiceBus;
 using NServiceBus.UniformSession;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus;
@@ -44,5 +43,12 @@ public class TodoMessagingAdapter : ITodoMessagingPort
         {
             TodoItemId = domainEvent.TodoItemId.Value
         });
+    }
+
+    public async Task SendIntegrationEvent(
+        TodoItemsDeletedDomainEvent domainEvent,
+        CancellationToken cancellationToken = default)
+    {
+        await _uniformSession.Publish(new TodoItemsDeletedIntegrationEvent());
     }
 }
