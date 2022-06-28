@@ -33,6 +33,9 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             SignalRPublisherMock.Verify(x => x.NewTodoItem(It.Is<TodoItemDescription>(d => d.Label == "test")), Times.Once);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single().Label.Should().Be("test");
 
             await AssertHangfireJobs(total: 1, succeeded: 1);
             await AssertRabbitMqQueueLength(WebQueue, 0);
@@ -52,7 +55,9 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await Task.Delay(WaitDuration);
 
             // Assert
-            SignalRPublisherMock.Verify(x => x.NewTodoItem(It.Is<TodoItemDescription?>(d => d == null)), Times.Never);
+            SignalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription?>()), Times.Never);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(0);
 
             await AssertHangfireJobs(total: 0, succeeded: 0);
             await AssertRabbitMqQueueLength(WebQueue, 0);
@@ -74,6 +79,8 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             SignalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription>()), Times.Once);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
 
             await AssertHangfireJobs(total: 1, succeeded: 1);
             await AssertRabbitMqQueueLength(WebQueue, 0);

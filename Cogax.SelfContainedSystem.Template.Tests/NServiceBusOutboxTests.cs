@@ -38,6 +38,9 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             SignalRPublisherMock.Verify(x => x.RemoveTodoItemdoItem(It.Is<Guid>(x => x == todoItem.Id)), Times.Once);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single().Completed.Should().BeTrue();
 
             await AssertHangfireJobs(total: 2, succeeded: 2);
             await AssertRabbitMqQueueLength(WebQueue, 0);
