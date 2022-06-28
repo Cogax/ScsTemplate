@@ -14,6 +14,7 @@
 * SendLocal prüfen
 * Sagas prüfen
 * Dapper sql command + transaction
+* AggregateConcurrency Exception in einem MediatR Behavior handeln und Polly-Retries auslösen
 
 ## Tests ausführen
 
