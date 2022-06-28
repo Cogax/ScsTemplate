@@ -2,6 +2,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
+using NServiceBus.Persistence.Sql;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 
@@ -38,9 +39,6 @@ public static class NServiceBusHostBuilderExtensions
             var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
-
-            //var nsbUnitOfWork = endpointConfiguration.UnitOfWork();
-            //nsbUnitOfWork.WrapHandlersInATransactionScope();
 
             // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
             // aber keine Abonnieren, Handeln oder Subscriben.
