@@ -10,7 +10,6 @@
 
 ## TODO
 
-* Hangfire Concurrency bei Outbox und mehreren Server-Instanzen vermeiden
 * SendLocal prüfen
 * Sagas prüfen
 * Dapper sql command + transaction
