@@ -1,10 +1,10 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 public interface IExecutionContext
 {
-    IUnitOfWork CreateUnitOfWork();
+    IPersistenceTransaction CreatePersistenceTransaction();
     IOutbox CreateOutbox();
 }

@@ -1,4 +1,4 @@
-using Cogax.SelfContainedSystem.Template.Core.Application.Common.Ports;
+using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
@@ -6,7 +6,6 @@ using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Rea
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Repositories;
 using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,11 +51,6 @@ public static class PersistenceAdapterServiceCollectionExtensions
             return dbContext;
         });
 
-        //services.AddDbContext<WriteModelDbContext>(optionsAction => optionsAction
-        //    .UseSqlServer(configuration["ConnectionStrings:Db"], sqlServerOptionsAction => sqlServerOptionsAction
-        //        .EnableRetryOnFailure()
-        //        .CommandTimeout(3600)));
-
         services.AddDbContext<ReadModelDbContext>(optionsAction => optionsAction
             .UseSqlServer(configuration["ConnectionStrings:Db"], sqlServerOptionsAction => sqlServerOptionsAction
                 .EnableRetryOnFailure()
@@ -65,7 +59,7 @@ public static class PersistenceAdapterServiceCollectionExtensions
 
         services.AddScoped<ITodoReadModelProvider, TodoReadmodelProvider>();
         services.AddScoped<ITodoItemRepository, TodoItemRepository>();
-        services.AddScoped<IPersistenceAdapter, SqlServerPersistenceAdapter>();
+        services.AddScoped<IPersistenceSession, EfCorePersistenceSession>();
 
         return services;
     }

@@ -1,7 +1,7 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.DomainEvents;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Contracts;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus;
 

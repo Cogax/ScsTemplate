@@ -1,4 +1,3 @@
-using Cogax.SelfContainedSystem.Template.Core.Application.Common.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Common;
 
 using MediatR;
@@ -12,14 +11,14 @@ public interface IDomainEventsDispatcher
 
 internal class DomainEventsDispatcher : IDomainEventsDispatcher
 {
-    private readonly IPersistenceAdapter persistenceAdapter;
+    private readonly IPersistenceSession _persistenceSession;
     private readonly IMediator mediator;
 
     public DomainEventsDispatcher(
-        IPersistenceAdapter persistenceAdapter,
+        IPersistenceSession persistenceSession,
         IMediator mediator)
     {
-        this.persistenceAdapter = persistenceAdapter;
+        this._persistenceSession = persistenceSession;
         this.mediator = mediator;
     }
 
@@ -31,7 +30,7 @@ internal class DomainEventsDispatcher : IDomainEventsDispatcher
         List<bool> areEventsPublishedPerAggregate;
         do
         {
-            var aggregates = await persistenceAdapter.GetAllTrackedAggregatesAsync(cancellationToken);
+            var aggregates = await _persistenceSession.GetTrackedAggregatesAsync(cancellationToken);
             if (!aggregates.Any())
                 break;
 

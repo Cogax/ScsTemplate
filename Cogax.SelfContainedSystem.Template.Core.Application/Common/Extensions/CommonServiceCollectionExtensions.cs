@@ -18,7 +18,7 @@ internal static class CommonServiceCollectionExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<IUnitOfWorkFactory>().Create());
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDomainEventsDispatcher, DomainEventsDispatcher>();
         services.AddSingleton<IChaosMonkey, NullChaosMonkey>();
 

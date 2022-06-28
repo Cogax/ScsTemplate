@@ -2,7 +2,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 
 using NServiceBus;
-using NServiceBus.Persistence.Sql;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 

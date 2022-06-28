@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
 
 public static class OutboxServiceCollectionExtensions
 {

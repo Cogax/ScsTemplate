@@ -1,3 +1,5 @@
+using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,7 @@ public static class ExecutionContextServiceCollectionExtensions
         services.AddScoped<NServiceBusMessageHandlerExecutionContext>();
         services.AddScoped<IExecutionContextFactory, ExecutionContextFactory>();
         services.AddScoped<IExecutionContext>(sp => sp.GetRequiredService<IExecutionContextFactory>().Create());
+        services.AddScoped<IPersistenceTransaction>(sp => sp.GetRequiredService<IExecutionContext>().CreatePersistenceTransaction());
 
         return services;
     }

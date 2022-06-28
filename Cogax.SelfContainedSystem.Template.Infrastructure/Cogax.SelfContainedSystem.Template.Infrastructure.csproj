@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExecutionContext\Outbox\" />
+    <Folder Include="ExecutionContext\Consistency\Outbox\" />
   </ItemGroup>
 
 </Project>

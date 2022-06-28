@@ -10,19 +10,13 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
     where TRequest : IRequest<TResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IDomainEventsDispatcher _domainEventsDispatcher;
-    private readonly IChaosMonkey _chaosMonkey;
     private readonly ILogger<UnitOfWorkBehavior<TRequest, TResponse>> _logger;
 
     public UnitOfWorkBehavior(
         IUnitOfWork unitOfWork,
-        IDomainEventsDispatcher domainEventsDispatcher,
-        IChaosMonkey chaosMonkey,
         ILogger<UnitOfWorkBehavior<TRequest, TResponse>> logger)
     {
         this._unitOfWork = unitOfWork;
-        _domainEventsDispatcher = domainEventsDispatcher;
-        _chaosMonkey = chaosMonkey;
         this._logger = logger;
     }
 
@@ -35,15 +29,7 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             (request.GetType().IsGenericType && request.GetType().GetGenericTypeDefinition() == typeof(ICommand<>)))
         {
             _logger.LogDebug($"CommandUnitOfWorkBehavior: Before handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
-
-            var response = await _unitOfWork.ExecuteOperation(async (cToken) =>
-            {
-                var result = await next();
-                await _domainEventsDispatcher.DispatchEventsAsync(cToken);
-                _chaosMonkey.OnUowCommit();
-                return result;
-            }, cancellationToken);
-
+            var response = await _unitOfWork.ExecuteBusinessOperation(async (_) => await next(), cancellationToken);
             _logger.LogDebug($"CommandUnitOfWorkBehavior: After handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
 
             return response;

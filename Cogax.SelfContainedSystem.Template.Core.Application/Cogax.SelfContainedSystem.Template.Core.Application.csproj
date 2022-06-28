@@ -17,7 +17,6 @@
   <ItemGroup>
     <Folder Include="Common\Abstractions\" />
     <Folder Include="Common\Exceptions\" />
-    <Folder Include="Common\Ports\" />
     <Folder Include="Todo\Readmodels\" />
     <Folder Include="Todo\Ports\" />
   </ItemGroup>

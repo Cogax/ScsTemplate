@@ -4,8 +4,8 @@ using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Ext
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
 using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Outbox;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.UnitOfWork;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency;
+using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
