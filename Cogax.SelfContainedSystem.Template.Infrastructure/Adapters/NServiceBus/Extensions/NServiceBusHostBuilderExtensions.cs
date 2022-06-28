@@ -1,3 +1,5 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.NsbExectionContextIdentifier;
+
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 
@@ -23,6 +25,7 @@ public static class NServiceBusHostBuilderExtensions
                 .Delayed(d => d.NumberOfRetries(0));
             endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
             endpointConfiguration.EnableUniformSession();
+            endpointConfiguration.EnableFeature<NsbExecutionContextIdentifierFeature>();
 
             // Persistence
             // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie

@@ -1,5 +1,6 @@
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.NsbExectionContextIdentifier;
+
 using Microsoft.Extensions.DependencyInjection;
-using NServiceBus.Persistence.Sql;
 
 namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
@@ -14,13 +15,10 @@ public class ExecutionContextFactory : IExecutionContextFactory
 
     public IExecutionContext Create()
     {
-        try // TODO: Better way to identiy NsbMessageHandlerContext, maybe via similar as IUnifiedSession
-        {
-            if (_serviceProvider.GetService<ISqlStorageSession>() != null)
-                return _serviceProvider.GetRequiredService<NServiceBusMessageHandlerExecutionContext>();
-        } catch{}
+        var nsbMessageHandlerExecutionContextIdentifier = _serviceProvider.GetRequiredService<INsbMessageHandlerExecutionContextIdentifier>();
+        if(nsbMessageHandlerExecutionContextIdentifier is InMessageHandlerExecutionContextIdentifier)
+            return _serviceProvider.GetRequiredService<NServiceBusMessageHandlerExecutionContext>();
         
-
         return _serviceProvider.GetRequiredService<DefaultExecutionContext>();
     }
 }
