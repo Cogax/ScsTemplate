@@ -97,7 +97,10 @@ public abstract class WebApplicationTestBase
         var db = scope.ServiceProvider.GetService<ReadModelDbContext>();
 
         await db.Database.ExecuteSqlRawAsync(@"
+IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NSB_OutboxData')
+BEGIN
 TRUNCATE TABLE [dbo].[NSB_OutboxData]
+END
 TRUNCATE TABLE [dbo].[TodoItems]
 TRUNCATE TABLE [HangFire].[AggregatedCounter]
 TRUNCATE TABLE [HangFire].[Counter]
