@@ -13,7 +13,7 @@ public static class Worker
     public static WebApplication BuildWorker(this WebApplicationBuilder builder)
     {
         builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
-        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Worker", enableSendOnly: false, enablePurgeAtStartup: true);
+        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Worker");
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

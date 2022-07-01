@@ -14,10 +14,8 @@ public static class Web
 {
     public static WebApplication BuildWeb(this WebApplicationBuilder builder)
     {
-        //Migrator.Migrate();
-
         builder.Configuration.ConfigureDefaultConfig(builder.Environment.EnvironmentName, builder.Environment.ContentRootPath);
-        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Web", enableSendOnly: true, enablePurgeAtStartup: true);
+        builder.Host.AddMessaging("Cogax.SelfContainedSystem.Template.Web");
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

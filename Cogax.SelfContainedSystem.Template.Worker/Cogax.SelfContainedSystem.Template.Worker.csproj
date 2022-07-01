@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Cogax.SelfContainedSystem.Template.Infrastructure\Cogax.SelfContainedSystem.Template.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Handlers\" />
-  </ItemGroup>
-
 </Project>

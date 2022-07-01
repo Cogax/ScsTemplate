@@ -9,16 +9,13 @@ namespace Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus
 
 public static class NServiceBusHostBuilderExtensions
 {
-    public static IHostBuilder AddMessaging(this IHostBuilder hostBuilder,
-        string endpointName,
-        bool enableSendOnly,
-        bool enablePurgeAtStartup = false)
+    public static IHostBuilder AddMessaging(this IHostBuilder hostBuilder, string endpointName)
     {
         hostBuilder.UseNServiceBus(hostBuilderContext =>
         {
             EndpointConfiguration endpointConfiguration = new(endpointName);
             endpointConfiguration.EnableInstallers(); // Damit Queues etc. beim Startup erstellt werden, falls nicht vorhanden (DEV Mode)
-            endpointConfiguration.PurgeOnStartup(enablePurgeAtStartup); // Damit Queues beim Startup immer leer sind (DEV Mode)
+            endpointConfiguration.PurgeOnStartup(true); // Damit Queues beim Startup immer leer sind (DEV Mode)
             endpointConfiguration // Tests
                 .Recoverability()
                 .Immediate(i => i.NumberOfRetries(0))
@@ -26,6 +23,19 @@ public static class NServiceBusHostBuilderExtensions
             endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
             endpointConfiguration.EnableUniformSession();
             endpointConfiguration.EnableFeature<NsbExecutionContextIdentifierFeature>();
+
+            // By default NServiceBus endpoints scan and load all assemblies found in the bin directory.
+            // This means that if more than one endpoint is loaded into the same process all endpoints will
+            // scan the same bin directory and all types related to NServiceBus, such as message handlers
+            // and/or sagas, are loaded by all endpoints. This can issues to endpoints running in end-to-end
+            // tests. It's suggested to configure the endpoint configuration to scan only a limited set of
+            // assemblies, and exclude those not related to the current endpoint.
+            string otherEntdpoint = endpointName.EndsWith("Worker")
+                ? endpointName.Replace("Worker", "Web")
+                : endpointName.Replace("Web", "Worker");
+
+            endpointConfiguration.AssemblyScanner().ExcludeAssemblies(
+                $"{otherEntdpoint}.dll", "Cogax.SelfContainedSystem.Template.Tests.dll");
 
             // Persistence
             // Die NSB Persistenz definiert wo die persistenten Daten gespeichert werden. Dies sind Daten wie
@@ -41,11 +51,6 @@ public static class NServiceBusHostBuilderExtensions
             var rabbitMqTransport = endpointConfiguration.UseTransport<RabbitMQTransport>();
             rabbitMqTransport.ConnectionString(hostBuilderContext.Configuration["ConnectionStrings:Bus"]);
             rabbitMqTransport.UseConventionalRoutingTopology();
-
-            // SendOnly Endpunkte sind Artefakte, welche nur Messages Publizieren und/oder senden
-            // aber keine Abonnieren, Handeln oder Subscriben.
-            if (enableSendOnly)
-                endpointConfiguration.SendOnly();
 
             return endpointConfiguration;
         });

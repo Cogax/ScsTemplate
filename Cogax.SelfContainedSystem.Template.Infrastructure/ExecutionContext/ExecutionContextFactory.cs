@@ -16,9 +16,9 @@ public class ExecutionContextFactory : IExecutionContextFactory
     public IExecutionContext Create()
     {
         var nsbMessageHandlerExecutionContextIdentifier = _serviceProvider.GetRequiredService<INsbMessageHandlerExecutionContextIdentifier>();
-        if(nsbMessageHandlerExecutionContextIdentifier is InMessageHandlerExecutionContextIdentifier)
+        if (nsbMessageHandlerExecutionContextIdentifier is InMessageHandlerExecutionContextIdentifier)
             return _serviceProvider.GetRequiredService<NServiceBusMessageHandlerExecutionContext>();
-        
+
         return _serviceProvider.GetRequiredService<DefaultExecutionContext>();
     }
 }

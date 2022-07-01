@@ -18,8 +18,12 @@
 ## Tests ausführen
 
 1. `docker-compose up`
-2. `Web` Projekt kurz starten (damit DB migriert wird)
-3. Tests mit Visual Studio ausführen
+2. Tests mit Visual Studio ausführen
+
+## Zuständigkeiten
+
+* `Web` bietet eine REST API an. Dieses Projekt publiziert Events (bzw. schreibt diese in die Outbox) und abonniert Events vom Bus um SingalR Notifizierungen auszulösen.
+* `Worker` ist ein Web API Projekt aber dient als Background Worker. Der Worker Service publiziert und abonniert Events. Zudem werden Hangfire Jobs (wie bspw. die Outbox) vom Worker abgearbeitet.
 
 
 ### Outbox Problematik

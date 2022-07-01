@@ -54,13 +54,15 @@ public abstract class WebApplicationTestBase
         Web.ConfigureServices(servicesOverride);
         Worker.ConfigureServices(servicesOverride);
         
-        RabbitMqClient = new ManagementClient("http://localhost", "guest", "guest", portNumber: 15672);
-
         await PurgeDb();
-        await PurgeRabbitMq();
 
         WebClient = Web.CreateClient();
         WorkerClient = Worker.CreateClient();
+
+        // Wait for queue setup
+        await Task.Delay(WaitDuration);
+        RabbitMqClient = new ManagementClient("http://localhost", "guest", "guest", portNumber: 15672);
+        await PurgeRabbitMq();
     }
 
     [TestCleanup]
