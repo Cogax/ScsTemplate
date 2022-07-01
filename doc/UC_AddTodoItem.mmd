@@ -1,4 +1,5 @@
 sequenceDiagram
+    rect rgb(255, 255, 255)
     actor User
     participant System
     participant DB
@@ -11,4 +12,4 @@ sequenceDiagram
     end
     Bus-->>System: Subscribe TodoItemAddedIntegrationEvent
     System->>User: SignalR NewTodoItem
-
+    end

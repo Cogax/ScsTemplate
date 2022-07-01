@@ -1,4 +1,5 @@
 sequenceDiagram
+    rect rgb(255, 255, 255)
     participant TimerTrigger as Scheduler / Timer Trigger
     actor User
     participant System
@@ -12,4 +13,5 @@ sequenceDiagram
     end
     Bus-->>System: Subscribe TodoItemsDeletedIntegrationEvent
     System->>User: SignalR RemoveTodoItem
+    end
 
