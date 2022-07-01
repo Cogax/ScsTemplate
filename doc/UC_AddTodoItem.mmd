@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor User
+    participant System
+    participant DB
+    participant Bus
+    User->>System: POST /TodoItem
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency
+    System-->>DB: INSERT TodoItem
+    System-->>Bus: Publish TodoItemAddedIntegrationEvent
+    end
+    Bus-->>System: Subscribe TodoItemAddedIntegrationEvent
+    System->>User: SignalR NewTodoItem
+

@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor User
+    participant System
+    participant DB
+    participant Bus
+    User->>System: PUT /TodoItem
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency
+    System-->>DB: UPDATE TodoItem SET Completed = 1
+    System-->>Bus: Publish TodoItemCompletedIntegrationEvent
+    end
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency
+    Bus-->>System: Subscribe TodoItemCompletedIntegrationEvent
+    System-->>DB: Update TodoItem SET Removed = 1
+    System-->>Bus: Publish TodoItemRemovedIntegrationEvent
+    end
+    Bus-->>System: Subscribe TodoItemRemovedIntegrationEvent
+    System->>User: SignalR RemoveTodoItem
+

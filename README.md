@@ -6,7 +6,27 @@
 * Outbox Pattern (`NServiceBusOutbox` & `HangfireOutbox`)
 * Integration Tests
 
-*Use Cases*
+## Use Cases
+
+### UC1: Add TodoItem
+
+> Database modification and message publish should happen transactionally. 
+> Therefore an Outbox is implemented.
+
+![Use-Case: Add TodoItem](doc/UC_AddTodoItem.png)
+
+### UC2: Complete TodoItem
+
+> The second transaction requires an outbox implementation which is connected 
+> to the subscribing message for deduplication.
+
+![Use-Case: Complete TodoItem](doc/UC_CompleteTodoItem.png)
+
+### UC3: Remove Deleted TodoItems
+
+> Simmilar to UC1 but this time we are not in a htttp context.
+
+![Use-Case: Delete removed TodoItems](doc/UC_DeleteRemovedTodoItems.png)
 
 ## TODO
 

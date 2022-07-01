@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant TimerTrigger as Scheduler / Timer Trigger
+    actor User
+    participant System
+    participant DB
+    participant Bus
+    TimerTrigger->>System: Trigger
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency
+    System-->>DB: DELETE TodoItems WHERE Removed = 1
+    System-->>Bus: Publish TodoItemsDeletedIntegrationEvent
+    end
+    Bus-->>System: Subscribe TodoItemsDeletedIntegrationEvent
+    System->>User: SignalR RemoveTodoItem
+
