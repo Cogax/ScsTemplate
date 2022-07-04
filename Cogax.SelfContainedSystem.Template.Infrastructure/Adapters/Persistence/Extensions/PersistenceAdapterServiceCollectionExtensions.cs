@@ -26,37 +26,25 @@ public static class PersistenceAdapterServiceCollectionExtensions
                 var nsbStorageSession = sp.GetRequiredService<ISqlStorageSession>();
                 return new DbContextOptionsBuilder<WriteModelDbContext>()
                     .UseSqlServer(nsbStorageSession.Connection, sqlServerOptionsAction =>
-                        sqlServerOptionsAction
-                            .EnableRetryOnFailure()
-                            .CommandTimeout(3600)).Options;
+                        sqlServerOptionsAction.CommandTimeout(3600)).Options;
             }
 
             return new DbContextOptionsBuilder<WriteModelDbContext>()
                 .UseSqlServer(configuration["ConnectionStrings:Db"], sqlServerOptionsAction =>
-                    sqlServerOptionsAction
-                        .EnableRetryOnFailure()
-                        .CommandTimeout(3600)).Options;
+                    sqlServerOptionsAction.CommandTimeout(3600)).Options;
         });
 
         services.AddScoped<WriteModelDbContext>(sp =>
+            new WriteModelDbContext(sp.GetRequiredService<DbContextOptions<WriteModelDbContext>>()));
+
+        services.AddScoped<ReadModelDbContext>(sp =>
         {
-            var dbContext = new WriteModelDbContext(sp.GetRequiredService<DbContextOptions<WriteModelDbContext>>());
-            var executionContext = sp.GetRequiredService<IExecutionContext>();
-            if (executionContext is NServiceBusMessageHandlerExecutionContext)
-            {
-                var nsbStorageSession = sp.GetRequiredService<ISqlStorageSession>();
-                dbContext.Database.UseTransaction(nsbStorageSession.Transaction);
-            }
-
-            return dbContext;
+            return new ReadModelDbContext(new DbContextOptionsBuilder<ReadModelDbContext>()
+                .UseSqlServer(sp.GetRequiredService<WriteModelDbContext>().Database.GetDbConnection(), sqlServerOptionsAction =>
+                    sqlServerOptionsAction.CommandTimeout(3600))
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).Options);
         });
-
-        services.AddDbContext<ReadModelDbContext>(optionsAction => optionsAction
-            .UseSqlServer(configuration["ConnectionStrings:Db"], sqlServerOptionsAction => sqlServerOptionsAction
-                .EnableRetryOnFailure()
-                .CommandTimeout(3600))
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-
+        
         services.AddScoped<ITodoReadModelProvider, TodoReadmodelProvider>();
         services.AddScoped<ITodoItemRepository, TodoItemRepository>();
         services.AddScoped<IPersistenceSession, EfCorePersistenceSession>();

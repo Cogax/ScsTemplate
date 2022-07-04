@@ -20,7 +20,11 @@ public static class NServiceBusHostBuilderExtensions
                 .Recoverability()
                 .Immediate(i => i.NumberOfRetries(0))
                 .Delayed(d => d.NumberOfRetries(0));
-            endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
+
+            var outbox = endpointConfiguration.EnableOutbox(); // Messaging Context Outbox aktivieren
+            outbox.DisableCleanup(); // Only tests
+            outbox.UseTransactionScope();
+
             endpointConfiguration.EnableUniformSession();
             endpointConfiguration.EnableFeature<NsbExecutionContextIdentifierFeature>();
 
