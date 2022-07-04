@@ -1,6 +1,7 @@
 using Cogax.SelfContainedSystem.Template.Core.Application.Common.Consistency;
 using Cogax.SelfContainedSystem.Template.Core.Application.Todo.Ports;
 using Cogax.SelfContainedSystem.Template.Core.Domain.Todo.Ports;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.NsbExectionContextIdentifier;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.ReadmodelProviders;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Repositories;
@@ -20,8 +21,8 @@ public static class PersistenceAdapterServiceCollectionExtensions
     {
         services.AddScoped<DbContextOptions<WriteModelDbContext>>(sp =>
         {
-            var executionContext = sp.GetRequiredService<IExecutionContext>();
-            if (executionContext is NServiceBusMessageHandlerExecutionContext)
+            var executionContextIdentifier = sp.GetRequiredService<INsbMessageHandlerExecutionContextIdentifier>();
+            if (executionContextIdentifier is InMessageHandlerExecutionContextIdentifier)
             {
                 var nsbStorageSession = sp.GetRequiredService<ISqlStorageSession>();
                 return new DbContextOptionsBuilder<WriteModelDbContext>()
