@@ -37,7 +37,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single().Label.Should().Be("test");
 
-            await AssertHangfireJobs(total: 1, succeeded: 1);
+            await AssertHangfireJobs(total: 2, succeeded: 2);
             await AssertNsbInboxOutboxEntries(total: 1);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
@@ -84,11 +84,34 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
 
-            await AssertHangfireJobs(total: 1, succeeded: 1);
+            await AssertHangfireJobs(total: 2, succeeded: 2);
             await AssertNsbInboxOutboxEntries(total: 1);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
             await AssertRabbitMqQueueLength(ErrorQueue, 0);
+        }
+
+        [TestMethod]
+        public async Task CreateTodoItem_WhenExceptionBeforeSignalRPublishJobEnqueued_ThenNoSignalRInvoked()
+        {
+            // Arrange
+            ChaosMonkeyMock.Setup(x => x.OnNsbHandleTodoItemAdded()).Throws<Exception>();
+
+            // Act
+            var response = await WebClient.PostAsync("/TodoItem?label=test", null);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(WaitDuration);
+
+            // Assert
+            SignalRPublisherMock.Verify(x => x.NewTodoItem(It.IsAny<TodoItemDescription?>()), Times.Never);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
+
+            await AssertHangfireJobs(total: 1, succeeded: 1);
+            await AssertNsbInboxOutboxEntries(total: 0);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 1);
         }
 
          [TestMethod]
@@ -113,7 +136,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single().Completed.Should().BeTrue();
 
-            await AssertHangfireJobs(total: 3, succeeded: 3);
+            await AssertHangfireJobs(total: 4, succeeded: 4);
             await AssertNsbInboxOutboxEntries(total: 3);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
@@ -131,7 +154,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             response2.IsSuccessStatusCode.Should().BeTrue();
             var todoItem = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single();
 
-            ChaosMonkeyMock.Setup(x => x.OnNsbHandle()).Throws<Exception>();
+            ChaosMonkeyMock.Setup(x => x.OnNsbHandleTodoItemCompleted()).Throws<Exception>();
 
             // Act
             var response = await WebClient.PutAsync($"/TodoItem?id={todoItem.Id}", null);
@@ -143,7 +166,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem.Id).Removed.Should().BeFalse();
 
-            await AssertHangfireJobs(total: 2, succeeded: 2);
+            await AssertHangfireJobs(total: 3, succeeded: 3);
             await AssertNsbInboxOutboxEntries(total: 1);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
@@ -184,7 +207,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem1.Id).Removed.Should().BeTrue();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Single(i => i.Id == todoItem2.Id).Removed.Should().BeFalse();
 
-            await AssertHangfireJobs(total: 5, succeeded: 5);
+            await AssertHangfireJobs(total: 7, succeeded: 7);
             await AssertNsbInboxOutboxEntries(total: 4);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
@@ -216,7 +239,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(0);
 
-            await AssertHangfireJobs(total: 5, succeeded: 5);
+            await AssertHangfireJobs(total: 6, succeeded: 6);
             await AssertNsbInboxOutboxEntries(total: 4);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
@@ -250,7 +273,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
 
-            await AssertHangfireJobs(total: 4, succeeded: 3);
+            await AssertHangfireJobs(total: 5, succeeded: 4);
             await AssertNsbInboxOutboxEntries(total: 3);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
