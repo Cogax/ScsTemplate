@@ -45,11 +45,11 @@ public class SignalRTodoItemIntegrationEventHandler :
 
     public async Task Handle(TodoItemRemovedIntegrationEvent message, IMessageHandlerContext context)
     {
-        await _signalRPublisher.RemoveTodoItemdoItem(message.TodoItemId);
+        _backgroundJobClient.Enqueue<ISignalRPublisher>(publisher => publisher.RemoveTodoItemdoItem(message.TodoItemId));
     }
 
     public async Task Handle(TodoItemsDeletedIntegrationEvent message, IMessageHandlerContext context)
     {
-        await _signalRPublisher.TodoItemsDeleted();
+        _backgroundJobClient.Enqueue<ISignalRPublisher>(publisher => publisher.TodoItemsDeleted());
     }
 }
