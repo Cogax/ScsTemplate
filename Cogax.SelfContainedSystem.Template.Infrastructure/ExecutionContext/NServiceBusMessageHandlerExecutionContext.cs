@@ -16,7 +16,7 @@ public class NServiceBusMessageHandlerExecutionContext : IExecutionContext
     }
 
     public IPersistenceTransaction CreatePersistenceTransaction() =>
-        _serviceProvider.GetRequiredService<DefaultPersistenceTransaction>();
+        _serviceProvider.GetRequiredService<TransactionScopePersistenceTransaction>();
 
     public IOutbox CreateOutbox() =>
         _serviceProvider.GetRequiredService<HangfireOutbox>();
