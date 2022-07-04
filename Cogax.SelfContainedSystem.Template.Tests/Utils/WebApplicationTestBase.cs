@@ -134,4 +134,13 @@ UPDATE [HangFire].[Hash] SET Value = 1 WHERE Field = 'LastJobId'");
         jobs.Where(j => j.StateName == "Succeeded").Should().HaveCount(succeeded);
         scope.Dispose();
     }
+
+    protected async Task AssertNsbInboxOutboxEntries(int total)
+    {
+        using var scope = Web.Services.CreateScope();
+        var entries = await scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().NsbOutboxData.ToListAsync();
+        entries.Should().HaveCount(total);
+        entries.Where(j => j.Dispatched).Should().HaveCount(total);
+        scope.Dispose();
+    }
 }
