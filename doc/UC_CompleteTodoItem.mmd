@@ -6,17 +6,20 @@ sequenceDiagram
     participant Bus
     User->>System: PUT /TodoItem
     rect rgb(191, 223, 255)
-    note right of System: Transcational consistency
+    note right of System: Transcational consistency (Outbox)
     System-->>DB: UPDATE TodoItem SET Completed = 1
     System-->>Bus: Publish TodoItemCompletedIntegrationEvent
     end
     rect rgb(191, 223, 255)
-    note right of System: Transcational consistency
+    note right of System: Transcational consistency (Inbox & Outbox)
     Bus-->>System: Subscribe TodoItemCompletedIntegrationEvent
     System-->>DB: Update TodoItem SET Removed = 1
     System-->>Bus: Publish TodoItemRemovedIntegrationEvent
     end
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency (Inbox)
     Bus-->>System: Subscribe TodoItemRemovedIntegrationEvent
     System->>User: SignalR RemoveTodoItem
+    end
     end
 

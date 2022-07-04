@@ -7,11 +7,14 @@ sequenceDiagram
     participant Bus
     TimerTrigger->>System: Trigger
     rect rgb(191, 223, 255)
-    note right of System: Transcational consistency
+    note right of System: Transcational consistency (Outbox)
     System-->>DB: DELETE TodoItems WHERE Removed = 1
     System-->>Bus: Publish TodoItemsDeletedIntegrationEvent
     end
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency (Inbox)
     Bus-->>System: Subscribe TodoItemsDeletedIntegrationEvent
     System->>User: SignalR RemoveTodoItem
+    end
     end
 
