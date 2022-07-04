@@ -113,7 +113,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(0);
 
-            await AssertHangfireJobs(total: 4, succeeded: 4);
+            await AssertHangfireJobs(total: 5, succeeded: 5);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
             await AssertRabbitMqQueueLength(ErrorQueue, 0);
@@ -146,7 +146,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
 
-            await AssertHangfireJobs(total: 3, succeeded: 2);
+            await AssertHangfireJobs(total: 4, succeeded: 3);
             await AssertRabbitMqQueueLength(WebQueue, 0);
             await AssertRabbitMqQueueLength(WorkerQueue, 0);
             await AssertRabbitMqQueueLength(ErrorQueue, 0);
