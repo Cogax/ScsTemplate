@@ -10,13 +10,16 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
     where TRequest : IRequest<TResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IChaosMonkey _chaosMonkey;
     private readonly ILogger<UnitOfWorkBehavior<TRequest, TResponse>> _logger;
 
     public UnitOfWorkBehavior(
         IUnitOfWork unitOfWork,
+        IChaosMonkey chaosMonkey,
         ILogger<UnitOfWorkBehavior<TRequest, TResponse>> logger)
     {
         this._unitOfWork = unitOfWork;
+        _chaosMonkey = chaosMonkey;
         this._logger = logger;
     }
 
@@ -31,6 +34,8 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             _logger.LogDebug($"CommandUnitOfWorkBehavior: Before handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
             var response = await _unitOfWork.ExecuteBusinessOperation(async (_) => await next(), cancellationToken);
             _logger.LogDebug($"CommandUnitOfWorkBehavior: After handle request. UnitOfWork: {_unitOfWork.GetHashCode()}");
+
+            _chaosMonkey.AfterUnitOfWorkCommitted();
 
             return response;
         }

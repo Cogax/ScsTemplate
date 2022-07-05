@@ -6,10 +6,13 @@ sequenceDiagram
     participant Bus
     User->>System: POST /TodoItem
     rect rgb(191, 223, 255)
-    note right of System: Transcational consistency
+    note right of System: Transcational consistency (Outbox)
     System-->>DB: INSERT TodoItem
     System-->>Bus: Publish TodoItemAddedIntegrationEvent
     end
+    rect rgb(191, 223, 255)
+    note right of System: Transcational consistency (Inbox)
     Bus-->>System: Subscribe TodoItemAddedIntegrationEvent
     System->>User: SignalR NewTodoItem
+    end
     end
