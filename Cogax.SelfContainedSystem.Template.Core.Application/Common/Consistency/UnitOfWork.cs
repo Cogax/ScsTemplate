@@ -23,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
             var result = await operation(cToken);
             await _domainEventsDispatcher.DispatchEventsAsync(cToken);
 
-            _chaosMonkey.OnUowCommit();
+            _chaosMonkey.AtEndOfUnitOfWorkScope();
 
             return result;
         }, cancellationToken);

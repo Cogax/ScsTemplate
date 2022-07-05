@@ -48,7 +48,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         public async Task CreateTodoItem_WhenExceptionBeforeCommitOccurs_ThenNoSignalRInvoked()
         {
             // Arrange
-            ChaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
+            ChaosMonkeyMock.Setup(x => x.AtEndOfUnitOfWorkScope()).Throws<Exception>();
 
             // Act
             var response = await WebClient.PostAsync("/TodoItem?label=test", null);
@@ -214,7 +214,6 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             await AssertRabbitMqQueueLength(ErrorQueue, 1);
         }
 
-        [TestMethod]
         public async Task DeleteRemovedTodoItems_WhenNoException_ThenSignalRInvoked()
         {
             // Arrange
@@ -247,7 +246,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
         }
 
         [TestMethod]
-        public async Task DeleteRemovedTodoItems_WhenException_ThenNoSignalRInvoked()
+        public async Task DeleteRemovedTodoItems_WhenExceptionInsideOfUnitOfWork_ThenNoSignalRInvoked()
         {
             // Arrange
             var response1 = await WebClient.PostAsync("/TodoItem?label=test", null);
@@ -261,7 +260,7 @@ namespace Cogax.SelfContainedSystem.Template.Tests
             response3.IsSuccessStatusCode.Should().BeTrue();
             await Task.Delay(WaitDuration);
 
-            ChaosMonkeyMock.Setup(x => x.OnUowCommit()).Throws<Exception>();
+            ChaosMonkeyMock.Setup(x => x.AtEndOfUnitOfWorkScope()).Throws<Exception>();
 
             // Act
             using var actScope = Worker.Services.CreateScope();
@@ -270,6 +269,40 @@ namespace Cogax.SelfContainedSystem.Template.Tests
 
             // Assert
             SignalRPublisherMock.Verify(x => x.TodoItemsDeleted(), Times.Never);
+            using var scope = Web.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
+
+            await AssertHangfireJobs(total: 6, succeeded: 5);
+            await AssertNsbInboxOutboxEntries(total: 3);
+            await AssertRabbitMqQueueLength(WebQueue, 0);
+            await AssertRabbitMqQueueLength(WorkerQueue, 0);
+            await AssertRabbitMqQueueLength(ErrorQueue, 0);
+        }
+
+        [TestMethod, Ignore("Hangfire Jobs have to be idempotent: https://docs.hangfire.io/en/latest/best-practices.html")]
+        public async Task DeleteRemovedTodoItems_WhenExceptionAfterUnitOfWork_ThenNoSignalRInvoked()
+        {
+            // Arrange
+            var response1 = await WebClient.PostAsync("/TodoItem?label=test", null);
+            response1.IsSuccessStatusCode.Should().BeTrue();
+
+            var response2 = await WebClient.GetAsync("/TodoItem");
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            var todoItem1 = JsonSerializer.Deserialize<IEnumerable<TodoItemDescription>>(await response2.Content.ReadAsStringAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Single();
+
+            var response3 = await WebClient.PutAsync($"/TodoItem?id={todoItem1.Id}", null);
+            response3.IsSuccessStatusCode.Should().BeTrue();
+            await Task.Delay(WaitDuration);
+
+            ChaosMonkeyMock.Setup(x => x.AfterUnitOfWorkCommitted()).Throws<Exception>();
+
+            // Act
+            using var actScope = Worker.Services.CreateScope();
+            actScope.ServiceProvider.GetRequiredService<IRecurringJobManager>().Trigger(nameof(DeleteRemovedTodoItemsCommand));
+            await Task.Delay(WaitDuration);
+
+            // Assert
+            //SignalRPublisherMock.Verify(x => x.TodoItemsDeleted(), Times.Never);
             using var scope = Web.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<ReadModelDbContext>().TodoItems.Should().HaveCount(1);
 
