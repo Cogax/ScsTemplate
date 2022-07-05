@@ -1,6 +1,6 @@
 using NServiceBus;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Consistency.Outbox;
 
 public static class OutboxExtensions
 {

@@ -5,7 +5,6 @@ using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Nsb
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.DbContexts;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.ReadmodelProviders;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Repositories;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

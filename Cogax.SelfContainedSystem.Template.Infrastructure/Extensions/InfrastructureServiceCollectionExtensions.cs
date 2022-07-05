@@ -3,9 +3,7 @@ using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Hangfire;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.NServiceBus.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.Persistence.Extensions;
 using Cogax.SelfContainedSystem.Template.Infrastructure.Adapters.SignalR;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency;
-using Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
+using Cogax.SelfContainedSystem.Template.Infrastructure.Consistency;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,16 +14,13 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddPersistenceAdapter(configuration);
+        services.AddCommonInfrastructure();services.AddPersistenceAdapter(configuration);
+
         services.AddSignalRAdapter(configuration);
         services.AddMessagingAdapter(configuration);
         services.AddHangfireAdapter(configuration);
-        services.AddOutbox(configuration);
         services.AddEmailAdapter(configuration);
-
-        services.AddExecutionContext(configuration);
-        services.AddUnitOfWork(configuration);
-
+        
         return services;
     }
 }

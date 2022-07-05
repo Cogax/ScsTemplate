@@ -1,7 +1,7 @@
 using NServiceBus;
 using NServiceBus.UniformSession;
 
-namespace Cogax.SelfContainedSystem.Template.Infrastructure.ExecutionContext.Consistency.Outbox;
+namespace Cogax.SelfContainedSystem.Template.Infrastructure.Consistency.Outbox;
 
 /// <summary>
 /// Publish Messages via NServiceBis Outbox.
